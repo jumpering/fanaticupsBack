@@ -28,4 +28,10 @@ public class CupEntity {
 
     @Column(name = "image")
     private String image;
+    
+    @Column(name = "price")
+    private Double price;
+
+    @Column(name = "owner")
+    private String owner;
 }

@@ -13,9 +13,10 @@ public class CupDTO {
 
     private Long id;
     private String name;
+    private String origin;
     private String Description;
     private String image;
-
-
+    private Double price;
+    private String owner;
 
 }

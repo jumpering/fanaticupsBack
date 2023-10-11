@@ -53,4 +53,9 @@ public class CupController {
         }
         return ResponseEntity.ok(cupDTO);
     }
+
+    @GetMapping(value = "/test")
+    public String test(){
+     return "test";   
+    }
 }
