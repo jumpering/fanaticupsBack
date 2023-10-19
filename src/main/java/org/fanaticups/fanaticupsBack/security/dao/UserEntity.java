@@ -1,4 +1,4 @@
-package org.fanaticups.fanaticupsBack.security.service;
+package org.fanaticups.fanaticupsBack.security.dao;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,4 +24,8 @@ private String email;
 
 @Column(name = "password")
 private String password;
+
+@Column(name = "roles")
+private String[] roles;
+
 }
