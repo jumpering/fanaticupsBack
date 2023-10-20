@@ -5,6 +5,7 @@ import org.fanaticups.fanaticupsBack.security.models.TokenInfo;
 import org.fanaticups.fanaticupsBack.security.service.JwtUtilService;
 import org.fanaticups.fanaticupsBack.security.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,7 +28,7 @@ public class AuthController {
     //UserDetailsServiceImpl userDetailsServiceImpl;
 
     @Autowired
-    UserDetailsService usuarioDetailsService;
+    UserDetailsService userDetailsService;
 
 
     @Autowired
@@ -36,16 +37,17 @@ public class AuthController {
     //@CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/authenticate")
     public ResponseEntity<TokenInfo> authenticate(@RequestBody AuthenticationReq authenticationReq ){
-        System.out.println("TRAZA!!!");
-        System.out.println("USER NAME: " + authenticationReq.getUser());
+
         this.authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
                 authenticationReq.getUser(), authenticationReq.getPassword())
         );
-        final UserDetails userDetails = this.usuarioDetailsService.loadUserByUsername(authenticationReq.getUser());
+        final UserDetails userDetails = this.userDetailsService.loadUserByUsername(authenticationReq.getUser());
         final String jwt = this.jwtUtilService.generateToken(userDetails);
-        System.out.println("token: " + jwt);
-        return ResponseEntity.ok(new TokenInfo(jwt));
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("Authorization", "Bearer " + jwt);
+        //return ResponseEntity.ok().headers(responseHeaders).body(new TokenInfo(jwt));
+        return ResponseEntity.ok().headers(responseHeaders).build();
     }
     
 }

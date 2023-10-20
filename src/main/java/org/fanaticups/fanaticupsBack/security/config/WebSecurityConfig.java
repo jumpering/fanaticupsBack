@@ -13,28 +13,30 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import static org.springframework.security.config.Customizer.withDefaults;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.fanaticups.fanaticupsBack.security.filters.JwtRequestFilter;
+import org.fanaticups.fanaticupsBack.security.filters.JWTAuthorizationFilter;
 
 @Configuration
 public class WebSecurityConfig {
 
     @Autowired
-    JwtRequestFilter jwtRequestFilter;
+    JWTAuthorizationFilter JWTAuthorizationFilter;
 
     @Bean
     SecurityFilterChain web(HttpSecurity http) throws Exception{
 
         http
+        .cors(withDefaults())
         .csrf(AbstractHttpConfigurer::disable) //to avoid 403 forbiden error on post
         .authorizeHttpRequests((authorize) -> authorize
             .requestMatchers("/authenticate/**").permitAll()
             .requestMatchers("/test/**").permitAll()
             .requestMatchers("/create/**").permitAll()
-            .requestMatchers("/cups/**").hasRole("ADMIN")
-            .anyRequest().authenticated()
+            // .requestMatchers("/cups/**").hasRole("ADMIN")
+            .requestMatchers("/cups/**").permitAll()
+            //.anyRequest().authenticated()
+            .anyRequest().permitAll()
         )
-        .cors(withDefaults())
-        .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(JWTAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
         .sessionManagement((session) -> session
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         );
