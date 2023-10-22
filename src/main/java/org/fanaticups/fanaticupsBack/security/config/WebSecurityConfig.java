@@ -3,6 +3,7 @@ package org.fanaticups.fanaticupsBack.security.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -30,12 +31,18 @@ public class WebSecurityConfig {
         .csrf(AbstractHttpConfigurer::disable) //to avoid 403 forbiden error on post
         .authorizeHttpRequests((authorize) -> authorize
             .requestMatchers("/authenticate/**").permitAll()
-            .requestMatchers("/test/**").permitAll()
-            .requestMatchers("/create/**").permitAll()
+            //.requestMatchers("/swagger-ui/**").permitAll()
+            .requestMatchers("/create/**").hasRole("ADMIN")
             // .requestMatchers("/cups/**").hasRole("ADMIN")
-            .requestMatchers("/cups/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/cups/**").permitAll()
+            .requestMatchers(HttpMethod.POST,"/cups/**").hasRole("ADMIN")
             //.anyRequest().authenticated()
-            .anyRequest().permitAll()
+            .anyRequest().permitAll() //para swagger...mirar como autorizarlo
+
+
+            //.requestMatchers("/authenticate/**").allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH").permiteAll()
+
+
         )
         .addFilterBefore(JWTAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
         .sessionManagement((session) -> session

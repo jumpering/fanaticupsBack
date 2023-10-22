@@ -1,10 +1,13 @@
 package org.fanaticups.fanaticupsBack.dao.entities;
 
+import org.fanaticups.fanaticupsBack.security.dao.UserEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
 
@@ -34,4 +37,7 @@ public class CupEntity {
 
     @Column(name = "owner")
     private String owner;
+
+    @ManyToOne
+    private UserEntity user;
 }

@@ -1,10 +1,15 @@
 package org.fanaticups.fanaticupsBack.security.dao;
 
+import java.util.List;
+
+import org.fanaticups.fanaticupsBack.dao.entities.CupEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
 
 @Data
@@ -26,6 +31,14 @@ private String email;
 private String password;
 
 @Column(name = "roles")
-private String[] roles;
+private String roles;
+
+@OneToMany(mappedBy = "user")
+private List<CupEntity> cups;
+
+// for test jpa.dialect
+// @Column(name = "test")
+// private String test;
+
 
 }

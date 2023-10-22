@@ -30,26 +30,32 @@ public class CorsConfig {
       @Override
       public void addCorsMappings(CorsRegistry registry){
 
-
-        registry.addMapping("/authenticate")
+        registry.addMapping("/**")
         .allowedOrigins("http://localhost:4200")
         .allowedMethods("*")
         .exposedHeaders("*");
 
 
-        registry.addMapping("/test")
-        .allowedOrigins("http://localhost:4200")
-        .allowedMethods("*")
-        .exposedHeaders("*");
+
+        // registry.addMapping("/authenticate")
+        // .allowedOrigins("http://localhost:4200")
+        // .allowedMethods("*")
+        // .exposedHeaders("*");
 
 
-        registry.addMapping("/cups")
-        .allowedOrigins("http://localhost:4200")
-        .allowedMethods("*");
+        // registry.addMapping("/test")
+        // .allowedOrigins("http://localhost:4200")
+        // .allowedMethods("*")
+        // .exposedHeaders("*");
 
-        registry.addMapping("/")
-        .allowedOrigins("http://localhost:4200")
-        .allowedMethods("*");
+
+        // registry.addMapping("/cups")
+        // .allowedOrigins("http://localhost:4200")
+        // .allowedMethods("*");
+
+        // registry.addMapping("/")
+        // .allowedOrigins("http://localhost:4200")
+        // .allowedMethods("*");
       }
     };
   }
