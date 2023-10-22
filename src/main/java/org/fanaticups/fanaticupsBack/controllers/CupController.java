@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.fanaticups.fanaticupsBack.models.CupDTO;
+import org.fanaticups.fanaticupsBack.security.models.AuthenticationReq;
 import org.fanaticups.fanaticupsBack.services.CupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -60,8 +63,14 @@ public class CupController {
         return ResponseEntity.ok(cupDTO);
     }
 
-    @GetMapping(value = "/test")
-    public String test(){
-     return "test";   
+    //@CrossOrigin(origins = "http://localhost:4200")
+    @PostMapping("/cups")
+    // @CrossOrigin(origins = "*") //this line
+    // @RequestMapping(value = "/cups", 
+    // produces = "application/json", 
+    // method=RequestMethod.POST)
+    public ResponseEntity<CupDTO> create( @RequestBody CupDTO cupDTO ){
+        System.out.println("desde back: " + cupDTO);
+     return ResponseEntity.ok(cupDTO);   
     }
 }
