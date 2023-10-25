@@ -1,5 +1,9 @@
 package org.fanaticups.fanaticupsBack.models;
 
+import org.fanaticups.fanaticupsBack.security.dao.UserEntity;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,4 +23,6 @@ public class CupDTO {
     private Double price;
     private String owner;
 
+    @JsonIgnore
+    private UserEntity user;
 }

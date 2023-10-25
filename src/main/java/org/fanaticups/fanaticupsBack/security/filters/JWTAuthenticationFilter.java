@@ -1,8 +1,10 @@
 package org.fanaticups.fanaticupsBack.security.filters;
 
 import java.io.IOException;
+
 import org.fanaticups.fanaticupsBack.security.service.JwtUtilService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,7 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Component
-public class JWTAuthorizationFilter extends OncePerRequestFilter{
+public class JWTAuthenticationFilter extends OncePerRequestFilter{
 
     @Autowired
     JwtUtilService jwtUtilService;
@@ -28,13 +30,14 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter{
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 
-       final String authorizationHeader = request.getHeader("Authorization");
+       final String authenticationHeader = request.getHeader("Authorization");
+       //final String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         String username = null;
         String jwt = null;
 
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            jwt = authorizationHeader.substring(7);
+        if (authenticationHeader != null && authenticationHeader.startsWith("Bearer ")) {
+            jwt = authenticationHeader.substring(7);
             username = jwtUtilService.extractUsername(jwt);
         }
 

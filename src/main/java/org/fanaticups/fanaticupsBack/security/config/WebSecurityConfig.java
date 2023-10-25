@@ -15,13 +15,13 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import static org.springframework.security.config.Customizer.withDefaults;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.fanaticups.fanaticupsBack.security.filters.JWTAuthorizationFilter;
+import org.fanaticups.fanaticupsBack.security.filters.JWTAuthenticationFilter;
 
 @Configuration
 public class WebSecurityConfig {
 
     @Autowired
-    JWTAuthorizationFilter JWTAuthorizationFilter;
+    JWTAuthenticationFilter JWTAuthorizationFilter;
 
     @Bean
     SecurityFilterChain web(HttpSecurity http) throws Exception{

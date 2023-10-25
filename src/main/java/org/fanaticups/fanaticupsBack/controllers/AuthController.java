@@ -1,6 +1,7 @@
 package org.fanaticups.fanaticupsBack.controllers;
 
 import org.fanaticups.fanaticupsBack.security.models.AuthenticationReq;
+import org.fanaticups.fanaticupsBack.security.models.SignupRequest;
 import org.fanaticups.fanaticupsBack.security.models.TokenInfo;
 import org.fanaticups.fanaticupsBack.security.service.JwtUtilService;
 import org.fanaticups.fanaticupsBack.security.service.UserDetailsServiceImpl;
