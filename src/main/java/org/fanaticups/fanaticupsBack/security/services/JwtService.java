@@ -8,6 +8,7 @@ import org.fanaticups.fanaticupsBack.dao.entities.UserEntity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -39,6 +40,15 @@ public class JwtService {
 
     private Key generateKey() {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+    }
+
+    public String extractUsername(String jwt) {
+        return extractAllClaims(jwt).getSubject();
+    }
+
+    private Claims extractAllClaims(String jwt) {
+        return Jwts.parser().setSigningKey(generateKey()).build()
+            .parseClaimsJws(jwt).getBody();
     }
     
 }
