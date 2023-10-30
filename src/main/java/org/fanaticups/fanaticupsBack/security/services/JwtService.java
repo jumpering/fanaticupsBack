@@ -20,14 +20,14 @@ public class JwtService {
     //private long EXPIRATION_MINUTES;
 
     private final static long EXPIRATION_MINUTES = 30;
-    private final static String SECRET_KEY = "ClaveMuySecreta";
+    private final static String SECRET_KEY = "ClaveMuySe jk jk j kj kj k jk j k jk creta123456789@";
 
     public String generateToken(UserEntity userEntity, Map<String, Object> extraClaims){
 
         Date issuedAt = new Date(System.currentTimeMillis()); 
         Date expiration = new Date( issuedAt.getTime() + (EXPIRATION_MINUTES * 60 * 1000) ); //30 minutes
 
-        Jwts.builder()
+        return Jwts.builder()
             .setClaims(extraClaims) //obligatorio el primero
             .setSubject(userEntity.getEmail())
             .setIssuedAt(issuedAt)
@@ -35,7 +35,6 @@ public class JwtService {
             .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
             .signWith(generateKey(), SignatureAlgorithm.HS256)
             .compact();
-        return null;
     }
 
     private Key generateKey() {
