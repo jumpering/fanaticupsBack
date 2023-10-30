@@ -19,16 +19,17 @@ public class HttpSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain( HttpSecurity http) throws Exception{
         http
-            //.csrf( csrfConfig -> csrfConfig.disable() )
-            .csrf(AbstractHttpConfigurer::disable) //to avoid 403 forbiden error on post
+            .csrf( csrfConfig -> csrfConfig.disable() )
+            //.csrf(AbstractHttpConfigurer::disable) //to avoid 403 forbiden error on post
             .sessionManagement( sessionMangConfig -> sessionMangConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS) )
             .authenticationProvider(authenticationProvider)
             .authorizeHttpRequests( authConfig -> {
-                // authConfig.requestMatchers(HttpMethod.POST, "/auth/login").permitAll();
-                // authConfig.requestMatchers("/error").permitAll();//endpoint por defecto springboot
+                authConfig.requestMatchers(HttpMethod.POST, "/auth/login").permitAll();
+                authConfig.requestMatchers("/error").permitAll();//endpoint por defecto springboot
                 authConfig.anyRequest().permitAll();
             } );
         return http.build();
+
     }
     
 }
