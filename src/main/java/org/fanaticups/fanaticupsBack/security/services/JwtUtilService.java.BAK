@@ -1,4 +1,4 @@
-package org.fanaticups.fanaticupsBack.security.service;
+package org.fanaticups.fanaticupsBack.security.services;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

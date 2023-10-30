@@ -2,7 +2,7 @@ package org.fanaticups.fanaticupsBack.security.filters;
 
 import java.io.IOException;
 
-import org.fanaticups.fanaticupsBack.security.service.JwtUtilService;
+import org.fanaticups.fanaticupsBack.security.services.JwtUtilService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

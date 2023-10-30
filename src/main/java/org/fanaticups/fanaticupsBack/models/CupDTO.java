@@ -1,6 +1,6 @@
 package org.fanaticups.fanaticupsBack.models;
 
-import org.fanaticups.fanaticupsBack.security.dao.UserEntity;
+import org.fanaticups.fanaticupsBack.dao.entities.UserEntity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

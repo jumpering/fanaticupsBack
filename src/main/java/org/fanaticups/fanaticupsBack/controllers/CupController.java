@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.fanaticups.fanaticupsBack.models.CupDTO;
-import org.fanaticups.fanaticupsBack.security.models.AuthenticationReq;
+import org.fanaticups.fanaticupsBack.models.UserLoginRequestDTO;
 import org.fanaticups.fanaticupsBack.services.CupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

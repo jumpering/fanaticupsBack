@@ -1,7 +1,5 @@
 package org.fanaticups.fanaticupsBack.dao.entities;
 
-import org.fanaticups.fanaticupsBack.security.dao.UserEntity;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
