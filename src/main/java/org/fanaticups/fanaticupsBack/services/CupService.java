@@ -16,14 +16,14 @@ import org.modelmapper.ModelMapper;
 public class CupService {
 
     @Autowired
-    private CupRepository CupRepository;
+    private CupRepository cupRepository;
     private final ModelMapper modelMapper = new ModelMapper();
     private String imagePath = "assets/images/";
 
     public List<CupDTO> findAllCups(){
         List<CupEntity> cupsEntities;
         List<CupDTO> cupsDTO = new ArrayList<CupDTO>();
-        cupsEntities = this.CupRepository.findAll();
+        cupsEntities = this.cupRepository.findAll();
         cupsEntities.forEach(element -> element.setImage(this.imagePath + element.getImage()));
         cupsEntities.forEach(element -> cupsDTO.add(
             this.modelMapper.map(element, CupDTO.class)
@@ -32,7 +32,7 @@ public class CupService {
     }
 
     public CupDTO findCupById(Long id){
-        Optional<CupEntity> cupEntity = this.CupRepository.findById(id);
+        Optional<CupEntity> cupEntity = this.cupRepository.findById(id);
         if(cupEntity.isPresent()){
             CupEntity cup = cupEntity.get();
             String cupImageName = cup.getImage();
@@ -41,5 +41,16 @@ public class CupService {
             return cupDTO;
         }
         return null;
+    }
+
+    public CupDTO add(CupDTO cupDTO){
+        boolean exist = this.cupRepository.existsByName(cupDTO.getName());
+        if(!exist){
+            CupEntity cupEntity = this.modelMapper.map(cupDTO ,CupEntity.class);
+            this.cupRepository.save(cupEntity);
+            cupDTO = this.modelMapper.map(cupEntity, CupDTO.class);
+            return cupDTO;
+        }
+            return null;
     }
 }

@@ -12,5 +12,7 @@ public interface CupRepository extends JpaRepository<CupEntity, Long>{
     public List<CupEntity> findAll();
 
     public Optional<CupEntity> findById(Long id);
+
+    public boolean existsByName(String name);
     
 }

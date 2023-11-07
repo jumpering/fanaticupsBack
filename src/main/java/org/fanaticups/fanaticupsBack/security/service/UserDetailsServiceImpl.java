@@ -34,7 +34,8 @@ public class UserDetailsServiceImpl implements UserDetailsService{
                 .withUsername(email)
                 .password(user.getPassword())
                 //.roles(user.roles().toArray(new String[0]))
-                .roles("ADMIN")
+                //.roles("ADMIN")
+                .roles(user.getRoles())
                 .build();  
 
     }

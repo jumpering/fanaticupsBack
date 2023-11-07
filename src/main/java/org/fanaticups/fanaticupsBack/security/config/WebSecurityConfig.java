@@ -29,15 +29,18 @@ public class WebSecurityConfig {
         http
         .cors(withDefaults())
         .csrf(AbstractHttpConfigurer::disable) //to avoid 403 forbiden error on post
+        //.csrf(csrf -> csrf.disable())
         .authorizeHttpRequests((authorize) -> authorize
-            .requestMatchers("/authenticate/**").permitAll()
-            //.requestMatchers("/swagger-ui/**").permitAll()
-            .requestMatchers("/create/**").hasRole("ADMIN")
+             .requestMatchers("/authenticate/**").permitAll()
+             .requestMatchers("/register/**").permitAll()
+            // .requestMatchers("/swagger-ui/**").permitAll()
+             .requestMatchers(HttpMethod.GET, "/cups/**").permitAll()
+             .requestMatchers(HttpMethod.POST, "/cups/**").authenticated()
+             //.requestMatchers("/create/**").authenticated()
             // .requestMatchers("/cups/**").hasRole("ADMIN")
-            .requestMatchers(HttpMethod.GET, "/cups/**").permitAll()
-            .requestMatchers(HttpMethod.POST,"/cups/**").hasRole("ADMIN")
-            //.anyRequest().authenticated()
-            .anyRequest().permitAll() //para swagger...mirar como autorizarlo
+            //.requestMatchers(HttpMethod.POST,"/cups/**").hasRole("ADMIN")
+            //.anyRequest().permitAll() //para swagger...mirar como autorizarlo
+            .anyRequest().authenticated()
 
 
             //.requestMatchers("/authenticate/**").allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH").permiteAll()
