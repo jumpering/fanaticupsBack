@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -33,8 +32,9 @@ public class WebSecurityConfig {
         .authorizeHttpRequests((authorize) -> authorize
              .requestMatchers("/authenticate/**").permitAll()
              .requestMatchers("/register/**").permitAll()
-            // .requestMatchers("/swagger-ui/**").permitAll()
-             .requestMatchers(HttpMethod.GET, "/cups/**").permitAll()
+             .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+            .requestMatchers("/v3/api-docs/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/cups/**").permitAll()
              .requestMatchers(HttpMethod.POST, "/cups/**").authenticated()
              //.requestMatchers("/create/**").authenticated()
             // .requestMatchers("/cups/**").hasRole("ADMIN")

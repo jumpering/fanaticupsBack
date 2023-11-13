@@ -67,7 +67,7 @@ public class AuthController {
                                         .email(registerReq.getEmail())
                                         .name(registerReq.getName())
                                         .password(passwordCoded)
-                                        .roles("ADMIN")//TODO a fuego quemado
+                                        .roles("REGISTRED")//TODO a fuego quemado
                                         .build();
 
         if (!this.userRepository.existsByEmail(registerReq.getEmail())){
@@ -78,7 +78,6 @@ public class AuthController {
                                                                 .build();
             return this.authenticate(authenticationReq);
         }
-        //comment 2
         return ResponseEntity.notFound().build();
     }
 

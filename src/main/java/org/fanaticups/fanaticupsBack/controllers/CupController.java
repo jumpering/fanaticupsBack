@@ -71,10 +71,9 @@ public class CupController {
     @PostMapping(value = "/cups")
     public ResponseEntity<CupDTO> create(@RequestBody CupDTO cupDTO){
         System.out.println("desde back: " + cupDTO);
-        this.cupService.add(cupDTO);
+        CupDTO responseCup = this.cupService.add(cupDTO);
 
-
-        
-     return ResponseEntity.ok(cupDTO);   
+        return ResponseEntity.ok(responseCup);
+     //return ResponseEntity.ok(cupDTO);
     }
 }
