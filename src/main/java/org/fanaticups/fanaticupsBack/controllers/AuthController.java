@@ -51,8 +51,10 @@ public class AuthController {
         this.authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         authenticationReq.getUser(), authenticationReq.getPassword()));
-        final UserDetails userDetails = this.userDetailsService.loadUserByUsername(authenticationReq.getUser());
-        final String jwt = this.jwtUtilService.generateToken(userDetails);
+        //final UserDetails userDetails = this.userDetailsService.loadUserByUsername(authenticationReq.getUser());
+        final UserEntity userDetailsEntity = (UserEntity) this.userDetailsService.loadUserByUsername(authenticationReq.getUser());
+        //final String jwt = this.jwtUtilService.generateToken(userDetails);
+        final String jwt = this.jwtUtilService.generateToken(userDetailsEntity);
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Authorization", "Bearer " + jwt);
         // return ResponseEntity.ok().headers(responseHeaders).body(new TokenInfo(jwt));

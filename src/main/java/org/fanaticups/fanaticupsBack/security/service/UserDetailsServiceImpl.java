@@ -29,14 +29,24 @@ public class UserDetailsServiceImpl implements UserDetailsService{
             //throw new UsernameNotFoundException(username);
             throw new UsernameNotFoundException(email);
         }
-        return User
-                //.withUsername(username)
-                .withUsername(email)
+
+
+        return UserEntity.builder()
+                .name(user.getName())
                 .password(user.getPassword())
-                //.roles(user.roles().toArray(new String[0]))
-                //.roles("ADMIN")
+                .email(user.getEmail())
                 .roles(user.getRoles())
-                .build();  
+                .build();
+
+
+//        return User
+//                //.withUsername(username)
+//                .withUsername(email)
+//                .password(user.getPassword())
+//                //.roles(user.roles().toArray(new String[0]))
+//                //.roles("ADMIN")
+//                .roles(user.getRoles())
+//                .build();
 
     }
     

@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.fanaticups.fanaticupsBack.security.dao.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -40,14 +41,15 @@ public class JwtUtilService {
     return extractExpiration(token).before(new Date());
   }
 
-  public String generateToken(UserDetails userDetails) {
+  public String generateToken(UserEntity userEntity) {
     Map<String, Object> claims = new HashMap<>();
     // Agregando informacion adicional como "claim"
-    GrantedAuthority rol = userDetails.getAuthorities().stream().collect(Collectors.toList()).get(0);
-    String name = userDetails.getUsername(); //TODO no coje el nombre de usuario, sino el mail!
+    GrantedAuthority rol = userEntity.getAuthorities().stream().collect(Collectors.toList()).get(0);
+    //String name = userDetails.getUsername(); //TODO no coje el nombre de usuario, sino el mail!
+    String name = userEntity.getName();
     claims.put("rol", rol);
     claims.put("name", name);
-    return createToken(claims, userDetails.getUsername());
+    return createToken(claims, userEntity.getUsername());
   }
 
   private String createToken(Map<String, Object> claims, String subject) {
