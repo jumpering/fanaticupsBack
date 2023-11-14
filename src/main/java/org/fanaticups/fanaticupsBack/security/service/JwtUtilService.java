@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -41,8 +43,10 @@ public class JwtUtilService {
   public String generateToken(UserDetails userDetails) {
     Map<String, Object> claims = new HashMap<>();
     // Agregando informacion adicional como "claim"
-    var rol = userDetails.getAuthorities().stream().collect(Collectors.toList()).get(0);
+    GrantedAuthority rol = userDetails.getAuthorities().stream().collect(Collectors.toList()).get(0);
+    String name = userDetails.getUsername(); //TODO no coje el nombre de usuario, sino el mail!
     claims.put("rol", rol);
+    claims.put("name", name);
     return createToken(claims, userDetails.getUsername());
   }
 
