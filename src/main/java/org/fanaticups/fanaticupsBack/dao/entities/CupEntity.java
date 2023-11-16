@@ -1,5 +1,6 @@
 package org.fanaticups.fanaticupsBack.dao.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.fanaticups.fanaticupsBack.security.dao.UserEntity;
 
 import jakarta.persistence.Column;
@@ -35,9 +36,10 @@ public class CupEntity {
     @Column(name = "price")
     private Double price;
 
-    @Column(name = "owner")
-    private String owner;
+//    @Column(name = "owner")
+//    private String owner;
 
     @ManyToOne
+    @JsonBackReference //para que no haga recursión
     private UserEntity user;
 }

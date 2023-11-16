@@ -21,8 +21,8 @@ public class CupDTO {
     private String Description;
     private String image;
     private Double price;
-    private String owner;
+//    private String owner;
 
-    @JsonIgnore
+//    @JsonIgnore
     private UserEntity user;
 }

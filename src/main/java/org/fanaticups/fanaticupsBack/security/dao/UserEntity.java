@@ -3,6 +3,7 @@ package org.fanaticups.fanaticupsBack.security.dao;
 import java.util.Collection;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.fanaticups.fanaticupsBack.dao.entities.CupEntity;
 
 import jakarta.persistence.Column;
@@ -25,52 +26,56 @@ import org.springframework.security.core.userdetails.UserDetails;
 @NoArgsConstructor
 @Entity(name = "users")
 public class UserEntity implements UserDetails {
-    
-@Id
-@GeneratedValue(strategy = GenerationType.IDENTITY)
-@Column(name = "id", nullable = false)
-private Long id;
 
-@Column(name = "name")
-private String name;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
 
-@Column(name = "email")
-private String email;
+    @Column(name = "name")
+    private String name;
 
-@Column(name = "password")
-private String password;
+    @Column(name = "email")
+    private String email;
 
-@Column(name = "roles")
-private String roles;
+    @JsonIgnore
+    @Column(name = "password")
+    private String password;
 
-@OneToMany(mappedBy = "user")
-private List<CupEntity> cups;
+    @JsonIgnore
+    @Column(name = "roles")
+    private String roles;
 
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<CupEntity> cups;
+
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(this.roles));
     }
-
+    @JsonIgnore
     @Override
     public String getUsername() {
         return this.email;
     }
-
+    @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
-
+    @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
-
+    @JsonIgnore
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
-
+    @JsonIgnore
     @Override
     public boolean isEnabled() {
         return true;
