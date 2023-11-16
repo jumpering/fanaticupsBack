@@ -15,8 +15,8 @@ public class AuthenticationReq implements Serializable{
     
     //private static final long serialVersionUID = 1L;
     
-    private String user;
-    //private String email;
+    //private String user;
+    private String email;
     private String password;
 
 }

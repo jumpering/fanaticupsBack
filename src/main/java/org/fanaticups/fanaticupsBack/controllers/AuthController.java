@@ -50,9 +50,9 @@ public class AuthController {
 
         this.authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        authenticationReq.getUser(), authenticationReq.getPassword()));
+                        authenticationReq.getEmail(), authenticationReq.getPassword()));
         //final UserDetails userDetails = this.userDetailsService.loadUserByUsername(authenticationReq.getUser());
-        final UserEntity userDetailsEntity = (UserEntity) this.userDetailsService.loadUserByUsername(authenticationReq.getUser());
+        final UserEntity userDetailsEntity = (UserEntity) this.userDetailsService.loadUserByUsername(authenticationReq.getEmail());
         //final String jwt = this.jwtUtilService.generateToken(userDetails);
         final String jwt = this.jwtUtilService.generateToken(userDetailsEntity);
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -66,8 +66,8 @@ public class AuthController {
 
         String passwordCoded = bCryptPasswordEncoder.encode(registerReq.getPassword());
         UserEntity userEntity = UserEntity.builder()
-                                        .email(registerReq.getEmail())
                                         .name(registerReq.getName())
+                                        .email(registerReq.getEmail())
                                         .password(passwordCoded)
                                         .roles("REGISTRED")//TODO a fuego quemado
                                         .build();
@@ -75,7 +75,7 @@ public class AuthController {
         if (!this.userRepository.existsByEmail(registerReq.getEmail())){
             this.userRepository.save(userEntity);
             AuthenticationReq authenticationReq = AuthenticationReq.builder()
-                                                                .user(registerReq.getEmail())
+                                                                .email(registerReq.getEmail())
                                                                 .password(registerReq.getPassword())
                                                                 .build();
             return this.authenticate(authenticationReq);
