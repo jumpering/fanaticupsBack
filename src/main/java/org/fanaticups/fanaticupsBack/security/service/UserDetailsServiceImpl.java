@@ -32,6 +32,7 @@ public class UserDetailsServiceImpl implements UserDetailsService{
 
 
         return UserEntity.builder()
+                .id(user.getId())
                 .name(user.getName())
                 .password(user.getPassword())
                 .email(user.getEmail())

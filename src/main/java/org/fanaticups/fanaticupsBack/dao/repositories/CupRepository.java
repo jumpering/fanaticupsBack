@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.fanaticups.fanaticupsBack.dao.entities.CupEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 
 public interface CupRepository extends JpaRepository<CupEntity, Long>{
@@ -14,5 +15,10 @@ public interface CupRepository extends JpaRepository<CupEntity, Long>{
     public Optional<CupEntity> findById(Long id);
 
     public boolean existsByName(String name);
+
+    @Query("select c from cups c where c.user.id = ?1")
+    public List<CupEntity> findAllByUserId(Long id);
+
+
     
 }

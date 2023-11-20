@@ -53,4 +53,15 @@ public class CupService {
         }
             return null;
     }
+
+    public Optional<List<CupDTO>> findAllCupsFromUser(Long id) {
+        List<CupEntity> cupListEntity = this.cupRepository.findAllByUserId(id);
+        if(!cupListEntity.isEmpty()){
+            List<CupDTO> cupListDTO = cupListEntity.stream()
+                    .map(element -> this.modelMapper.map(element, CupDTO.class))
+                    .toList();
+            return Optional.of(cupListDTO);
+        }
+        return Optional.empty();
+    }
 }

@@ -12,7 +12,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
 import static org.springframework.security.config.Customizer.withDefaults;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.fanaticups.fanaticupsBack.security.filters.JWTAuthenticationFilter;
 
@@ -23,41 +25,40 @@ public class WebSecurityConfig {
     JWTAuthenticationFilter JWTAuthorizationFilter;
 
     @Bean
-    SecurityFilterChain web(HttpSecurity http) throws Exception{
+    SecurityFilterChain web(HttpSecurity http) throws Exception {
 
         http
-        .cors(withDefaults())
-        .csrf(AbstractHttpConfigurer::disable) //to avoid 403 forbiden error on post
-        //.csrf(csrf -> csrf.disable())
-        .authorizeHttpRequests((authorize) -> authorize
-             .requestMatchers("/authenticate/**").permitAll()
-             .requestMatchers("/register/**").permitAll()
-             .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-            .requestMatchers("/v3/api-docs/**").permitAll()
-            .requestMatchers(HttpMethod.GET, "/cups/**").permitAll()
-             .requestMatchers(HttpMethod.POST, "/cups/**").authenticated()
-             //.requestMatchers("/create/**").authenticated()
-            // .requestMatchers("/cups/**").hasRole("ADMIN")
-            //.requestMatchers(HttpMethod.POST,"/cups/**").hasRole("ADMIN")
-            //.anyRequest().permitAll() //para swagger...mirar como autorizarlo
-            .anyRequest().authenticated()
+                .cors(withDefaults())
+                .csrf(AbstractHttpConfigurer::disable) //to avoid 403 forbiden error on post
+                //.csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests((authorize) -> authorize
+                                .requestMatchers("/authenticate/**").permitAll()
+                                .requestMatchers("/register/**").permitAll()
+                                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                                .requestMatchers("/v3/api-docs/**").permitAll()
+                                //.requestMatchers(HttpMethod.GET, "/cups/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/cups").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/cups/{id}").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/cups/user/**").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/cups/**").authenticated()
+                                .anyRequest().authenticated()
 
 
-            //.requestMatchers("/authenticate/**").allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH").permiteAll()
+                        //.requestMatchers("/authenticate/**").allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH").permiteAll()
 
 
-        )
-        .addFilterBefore(JWTAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
-        .sessionManagement((session) -> session
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        );
+                )
+                .addFilterBefore(JWTAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
+                .sessionManagement((session) -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                );
 
-    // http
-    //     .formLogin(withDefaults()); // (1)
-    // http
-    //     .httpBasic(withDefaults()); // (1)
+        // http
+        //     .formLogin(withDefaults()); // (1)
+        // http
+        //     .httpBasic(withDefaults()); // (1)
 
-    return http.build();
+        return http.build();
     }
 
 //    @Bean
@@ -67,12 +68,12 @@ public class WebSecurityConfig {
 
 
     @Bean
-    BCryptPasswordEncoder bCryptPasswordEncoder(){
+    BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception{
+    AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 

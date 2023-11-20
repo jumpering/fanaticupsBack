@@ -3,6 +3,7 @@ package org.fanaticups.fanaticupsBack.controllers;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.fanaticups.fanaticupsBack.models.CupDTO;
 import org.fanaticups.fanaticupsBack.security.models.AuthenticationReq;
@@ -10,6 +11,7 @@ import org.fanaticups.fanaticupsBack.services.CupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -75,5 +77,14 @@ public class CupController {
 
         return ResponseEntity.ok(responseCup);
      //return ResponseEntity.ok(cupDTO);
+    }
+
+    @GetMapping(value = "/cups/user/{id}")
+    public ResponseEntity<List<CupDTO>> getUserCupsList(@PathVariable Long id){
+        Optional<List<CupDTO>> cupDTOListOptional = this.cupService.findAllCupsFromUser(id);
+        if(!cupDTOListOptional.isEmpty()){
+            return ResponseEntity.ok(cupDTOListOptional.get());
+        }
+        return ResponseEntity.notFound().build();
     }
 }

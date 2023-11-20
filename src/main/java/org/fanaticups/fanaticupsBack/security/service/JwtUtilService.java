@@ -47,8 +47,10 @@ public class JwtUtilService {
     GrantedAuthority rol = userEntity.getAuthorities().stream().collect(Collectors.toList()).get(0);
     //String name = userDetails.getUsername(); //TODO no coje el nombre de usuario, sino el mail!
     String name = userEntity.getName();
+    Long id = userEntity.getId();
     claims.put("rol", rol);
     claims.put("name", name);
+    claims.put("id", id);
     return createToken(claims, userEntity.getUsername());
   }
 
