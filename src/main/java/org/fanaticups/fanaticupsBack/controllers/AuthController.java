@@ -9,6 +9,7 @@ import org.fanaticups.fanaticupsBack.security.service.JwtUtilService;
 import org.fanaticups.fanaticupsBack.security.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -51,13 +52,10 @@ public class AuthController {
         this.authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         authenticationReq.getEmail(), authenticationReq.getPassword()));
-        //final UserDetails userDetails = this.userDetailsService.loadUserByUsername(authenticationReq.getUser());
         final UserEntity userDetailsEntity = (UserEntity) this.userDetailsService.loadUserByUsername(authenticationReq.getEmail());
-        //final String jwt = this.jwtUtilService.generateToken(userDetails);
         final String jwt = this.jwtUtilService.generateToken(userDetailsEntity);
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Authorization", "Bearer " + jwt);
-        // return ResponseEntity.ok().headers(responseHeaders).body(new TokenInfo(jwt));
         return ResponseEntity.ok().headers(responseHeaders).build();
     }
 
@@ -80,7 +78,11 @@ public class AuthController {
                                                                 .build();
             return this.authenticate(authenticationReq);
         }
-        return ResponseEntity.notFound().build();
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("Message", "Email exist in data base");
+        return new ResponseEntity<>(
+                null, responseHeaders, HttpStatus.NOT_FOUND);
+        //return ResponseEntity.notFound().build();
     }
 
 }
