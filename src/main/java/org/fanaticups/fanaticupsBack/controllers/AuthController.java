@@ -33,9 +33,6 @@ public class AuthController {
     @Autowired
     UserRepository userRepository;
 
-    // @Autowired
-    // UserDetailsServiceImpl userDetailsServiceImpl;
-
     @Autowired
     UserDetailsService userDetailsService;
 
