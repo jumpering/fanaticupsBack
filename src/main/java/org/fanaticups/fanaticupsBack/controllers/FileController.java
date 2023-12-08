@@ -19,7 +19,8 @@ public class FileController {
 
     @PostMapping("/files")
     public String upload(@RequestParam("file") MultipartFile file,
-                             @RequestParam("userId") String userId) throws IOException { //todo usar userId jerarquia carpetas?
+                            @RequestParam("userId") String userId,
+                            @RequestParam("cupName") String cupName) throws IOException { //todo usar userId jerarquia carpetas?
         String fullFile = file.getOriginalFilename();
         //Path destination = Paths.get("src/main/resources/images/" + fullFile);
         Path destination = Paths.get(pathDirectory + fullFile);

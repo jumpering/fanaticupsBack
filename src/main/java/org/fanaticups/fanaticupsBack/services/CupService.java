@@ -24,7 +24,8 @@ public class CupService {
         List<CupEntity> cupsEntities;
         List<CupDTO> cupsDTO = new ArrayList<CupDTO>();
         cupsEntities = this.cupRepository.findAll();
-        cupsEntities.forEach(element -> element.setImage(this.imagePath + element.getImage()));
+        //cupsEntities.forEach(element -> element.setImage(this.imagePath + element.getImage()));
+        cupsEntities.forEach(element -> element.setImage(element.getImage()));
         cupsEntities.forEach(element -> cupsDTO.add(
             this.modelMapper.map(element, CupDTO.class)
         ));
