@@ -1,5 +1,6 @@
 package org.fanaticups.fanaticupsBack.controllers;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -18,9 +19,9 @@ public class FileController {
     private String pathDirectory = "///Users/xaviergomezcanals/Documents/Projects/fanaticups/images/";
 
     @PostMapping("/files")
-    public String upload(@RequestParam("file") MultipartFile file,
-                            @RequestParam("userId") String userId,
-                            @RequestParam("cupName") String cupName) throws IOException { //todo usar userId jerarquia carpetas?
+    public ResponseEntity<String> upload(@RequestParam("file") MultipartFile file,
+                                 @RequestParam("userId") String userId,
+                                 @RequestParam("cupName") String cupName) throws IOException { //todo usar userId jerarquia carpetas?
         String fullFile = file.getOriginalFilename();
         //Path destination = Paths.get("src/main/resources/images/" + fullFile);
         Path destination = Paths.get(pathDirectory + fullFile);
@@ -28,12 +29,6 @@ public class FileController {
         InputStream inputStream = file.getInputStream();
         Files.copy(inputStream, destination,
                 StandardCopyOption.REPLACE_EXISTING);
-        return "ok";
+        return ResponseEntity.ok("File success uploaded");
     }
-
-//    @GetMapping("/files/{id}")
-//    public File getImage(@PathVariable Long id){
-//
-//    }
-
 }
