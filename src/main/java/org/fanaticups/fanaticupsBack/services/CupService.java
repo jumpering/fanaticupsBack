@@ -65,4 +65,8 @@ public class CupService {
         }
         return Optional.empty();
     }
+
+    public Boolean findCupByName(String name) {
+        return this.cupRepository.existsByName(name);
+    }
 }

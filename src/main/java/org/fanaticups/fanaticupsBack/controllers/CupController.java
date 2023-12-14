@@ -76,6 +76,12 @@ public class CupController {
         return ResponseEntity.ok(cupDTO);
     }
 
+    @PostMapping(value = "/cups/findCupName")
+    public ResponseEntity<Boolean> cupNameExist(@RequestParam("userId") String userId, @RequestParam("cupName") String cupName){
+        Boolean existCupName = this.cupService.findCupByName(cupName);
+        return ResponseEntity.ok(existCupName);
+    }
+
      @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping(value = "/cups")
     public ResponseEntity<CupDTO> create(@RequestBody RequestBodyCreateCup requestBodyCreateCup) throws IOException {
