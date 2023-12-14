@@ -113,4 +113,10 @@ public class CupController {
         }
         return ResponseEntity.notFound().build();
     }
+
+    @DeleteMapping(value = "/cups/{id}") //FALTA BORRAR IMAGEN!!
+    public ResponseEntity<Void> deleteCup(@PathVariable Long id){
+        this.cupService.delete(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

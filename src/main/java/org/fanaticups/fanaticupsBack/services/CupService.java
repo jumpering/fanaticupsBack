@@ -69,4 +69,8 @@ public class CupService {
     public Boolean findCupByName(String name) {
         return this.cupRepository.existsByName(name);
     }
+
+    public void delete(Long id) {
+        this.cupRepository.deleteById(id);
+    }
 }
