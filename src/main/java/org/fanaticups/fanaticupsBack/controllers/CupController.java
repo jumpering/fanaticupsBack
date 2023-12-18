@@ -19,6 +19,7 @@ import org.fanaticups.fanaticupsBack.security.dao.UserEntity;
 import org.fanaticups.fanaticupsBack.security.dao.UserRepository;
 import org.fanaticups.fanaticupsBack.security.models.AuthenticationReq;
 import org.fanaticups.fanaticupsBack.services.CupService;
+import org.fanaticups.fanaticupsBack.services.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -33,7 +34,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.Valid;
 
 @RestController
 public class CupController {
@@ -44,8 +44,9 @@ public class CupController {
     @Autowired
     private UserRepository userRepository;
 
-    private String pathDirectory = "///Users/xaviergomezcanals/Documents/Projects/fanaticups/images/";
-    
+    @Autowired
+    private FileService fileService;
+
     @Operation(summary = "Get all cups")
     @ApiResponses(value = { 
         @ApiResponse(responseCode = "200", 
@@ -57,7 +58,6 @@ public class CupController {
     @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping(value = "/cups")
     public ResponseEntity<List<CupDTO>> findAllCups(){
-        System.out.println("TRAZA");
         List<CupDTO> cupsDTOList = this.cupService.findAllCups();
         if(cupsDTOList.isEmpty()){
             return ResponseEntity.notFound().build();
@@ -76,47 +76,41 @@ public class CupController {
         return ResponseEntity.ok(cupDTO);
     }
 
-    @PostMapping(value = "/cups/findCupName")
-    public ResponseEntity<Boolean> cupNameExist(@RequestParam("userId") String userId, @RequestParam("cupName") String cupName){
-        Boolean existCupName = this.cupService.findCupByName(cupName);
+    @PostMapping(value = "/cups/findCupNameByUserId")
+    public ResponseEntity<Boolean> existCupByUserIdAndCupName(@RequestParam("userId") String userId, @RequestParam("cupName") String cupName){
+        Boolean existCupName = this.cupService.existCupByUserIdAndCupName(userId, cupName);
         return ResponseEntity.ok(existCupName);
     }
 
      @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping(value = "/cups")
     public ResponseEntity<CupDTO> create(@RequestBody RequestBodyCreateCup requestBodyCreateCup) throws IOException {
-         System.out.println("id:" + requestBodyCreateCup.getUserId() + " ::: " + " cup: " + requestBodyCreateCup.getCup());
          Optional<UserEntity> userEntity = this.userRepository.findById(Math.toIntExact(Long.parseLong(requestBodyCreateCup.getUserId())));
          ObjectMapper objectMapper = new ObjectMapper();
          CupDTO cupDTO = objectMapper.readValue(requestBodyCreateCup.getCup(), CupDTO.class);
          cupDTO.setUser(userEntity.get());
-//         MultipartFile file = requestBodyCreateCup.getFile();
-//         String fullFile = file.getOriginalFilename();
-//         //cupDTO.setImage(fullFile);
-//         //Path destination = Paths.get("src/main/resources/images/" + fullFile);
-//         Path destination = Paths.get(pathDirectory + fullFile);
-//         InputStream inputStream = file.getInputStream();
-//         Files.copy(inputStream, destination,
-//                 StandardCopyOption.REPLACE_EXISTING);
-//
          CupDTO responseCup = this.cupService.add(cupDTO);
-//
-//
         return ResponseEntity.ok(responseCup);
     }
 
-    @GetMapping(value = "/cups/user/{id}")
-    public ResponseEntity<List<CupDTO>> getUserCupsList(@PathVariable Long id){
-        Optional<List<CupDTO>> cupDTOListOptional = this.cupService.findAllCupsFromUser(id);
-        if(!cupDTOListOptional.isEmpty()){
-            return ResponseEntity.ok(cupDTOListOptional.get());
-        }
-        return ResponseEntity.notFound().build();
-    }
+//    @GetMapping(value = "/cups/user/{id}")
+//    public ResponseEntity<List<CupDTO>> getUserCupsList(@PathVariable Long id){
+//        Optional<List<CupDTO>> cupDTOListOptional = this.cupService.findAllCupsFromUser(id);
+//        if(!cupDTOListOptional.isEmpty()){
+//            return ResponseEntity.ok(cupDTOListOptional.get());
+//        }
+//        return ResponseEntity.notFound().build();
+//    }
 
     @DeleteMapping(value = "/cups/{id}") //FALTA BORRAR IMAGEN!!
     public ResponseEntity<Void> deleteCup(@PathVariable Long id){
-        this.cupService.delete(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        CupDTO cupDTO = this.cupService.findCupById(id);
+        String cupName = cupDTO.getName();
+        Long userIdCup = cupDTO.getUser().getId();
+        String path = userIdCup + "/" + cupName + "/";
+        this.fileService.deletePathAndFiles(path); //TODO
+        //this.cupService.delete(id);
+        return null;
+        //return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

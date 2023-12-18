@@ -18,14 +18,17 @@ public class CupService {
     @Autowired
     private CupRepository cupRepository;
     private final ModelMapper modelMapper = new ModelMapper();
-    private String imagePath = "assets/images/";
+    //private String imagePath = "assets/images/";
+    //private String imagePath = "///Users/xaviergomezcanals/Documents/Projects/fanaticups/images/";
 
     public List<CupDTO> findAllCups(){
         List<CupEntity> cupsEntities;
         List<CupDTO> cupsDTO = new ArrayList<CupDTO>();
         cupsEntities = this.cupRepository.findAll();
-        //cupsEntities.forEach(element -> element.setImage(this.imagePath + element.getImage()));
-        cupsEntities.forEach(element -> element.setImage(element.getImage()));
+        cupsEntities.forEach(element -> {
+            String imagePath = element.getUser().getId() + "/" + element.getName() + "/";
+            element.setImage(imagePath + element.getImage());
+        });
         cupsEntities.forEach(element -> cupsDTO.add(
             this.modelMapper.map(element, CupDTO.class)
         ));
@@ -36,10 +39,9 @@ public class CupService {
         Optional<CupEntity> cupEntity = this.cupRepository.findById(id);
         if(cupEntity.isPresent()){
             CupEntity cup = cupEntity.get();
-            String cupImageName = cup.getImage();
-            cup.setImage(this.imagePath + cupImageName);
-            CupDTO cupDTO = this.modelMapper.map(cup, CupDTO.class);
-            return cupDTO;
+            String imagePath = cup.getUser().getId() + "/" + cup.getName() + "/";
+            cup.setImage(imagePath + cup.getImage());
+            return this.modelMapper.map(cup, CupDTO.class);
         }
         return null;
     }
@@ -55,19 +57,19 @@ public class CupService {
             return null;
     }
 
-    public Optional<List<CupDTO>> findAllCupsFromUser(Long id) {
-        List<CupEntity> cupListEntity = this.cupRepository.findAllByUserId(id);
-        if(!cupListEntity.isEmpty()){
-            List<CupDTO> cupListDTO = cupListEntity.stream()
-                    .map(element -> this.modelMapper.map(element, CupDTO.class))
-                    .toList();
-            return Optional.of(cupListDTO);
-        }
-        return Optional.empty();
-    }
+//    public Optional<List<CupDTO>> findAllCupsFromUser(Long id) {
+//        List<CupEntity> cupListEntity = this.cupRepository.findAllByUserId(id);
+//        if(!cupListEntity.isEmpty()){
+//            List<CupDTO> cupListDTO = cupListEntity.stream()
+//                    .map(element -> this.modelMapper.map(element, CupDTO.class))
+//                    .toList();
+//            return Optional.of(cupListDTO);
+//        }
+//        return Optional.empty();
+//    }
 
-    public Boolean findCupByName(String name) {
-        return this.cupRepository.existsByName(name);
+    public Boolean existCupByUserIdAndCupName(String userId, String name) {
+        return this.cupRepository.existsByUser_IdAndName(Long.valueOf(userId), name);
     }
 
     public void delete(Long id) {

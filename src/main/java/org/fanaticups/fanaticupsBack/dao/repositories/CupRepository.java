@@ -16,8 +16,10 @@ public interface CupRepository extends JpaRepository<CupEntity, Long>{
 
     public boolean existsByName(String name);
 
-    @Query("select c from cups c where c.user.id = ?1")
-    public List<CupEntity> findAllByUserId(Long id);
+    public boolean existsByUser_IdAndName(Long userId, String name);
+
+//    @Query("select c from cups c where c.user.id = ?1")
+//    public List<CupEntity> findAllByUserId(Long id);
 
 
     
