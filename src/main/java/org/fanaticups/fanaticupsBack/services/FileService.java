@@ -3,6 +3,7 @@ package org.fanaticups.fanaticupsBack.services;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.*;
@@ -31,49 +32,16 @@ public class FileService {
         }
     }
 
-//    public boolean deleteFile(String path, String fileName){
-//        String imagePath = this.pathDirectory.concat(path);
-//        try {
-//            Files.deleteIfExists(Paths.get(fileName));
-//            return true;
-//        } catch (IOException e) {
-//            System.out.println("error deleting image: " + e.getMessage());
-//            return false;
-//        }
-//    }
-
-    public boolean deletePathAndFiles(String path){
-        String imagePath = this.pathDirectory.concat(path);
-        String baseDirectory = "/user/xa/Documents/Projects/miProyecto/images";
-        String subdirectoryPath = "1/Hola que tal";
-
+    public boolean deletePathAndFile(String path, String cupImage){
+        Path directoryPath = Paths.get(this.pathDirectory, path);
         try {
-            // Combina las rutas para obtener la ruta completa del directorio a eliminar
-            //Path directoryPath = Paths.get(baseDirectory, subdirectoryPath);
-            Path directoryPath = Paths.get(this.pathDirectory, path);
-            System.out.println("PATH DE ENTRADA: " + path);
-
-
-            // Recopilar elementos para eliminar
             List<Path> pathsToDelete = Files.walk(directoryPath, FileVisitOption.FOLLOW_LINKS)
                     .sorted(Comparator.reverseOrder())
-                    .peek(System.out::println)
                     .collect(Collectors.toList());
-
-
-//            Files.walk(directoryPath)
-//                    .sorted(Comparator.reverseOrder())
-//                    .map(Path::toFile)
-//                    .forEach(File::delete);
-
-            // Eliminar archivos y directorios
-//            for (Path e : pathsToDelete) {
-//                Files.deleteIfExists(e);
-//            }
-            System.out.println("TRAZA: " + pathsToDelete);
+            pathsToDelete.stream().map(Path::toFile).forEach(File::delete);
             return true;
-        } catch (IOException e) {
-            System.out.println("error deleting path: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("error deleting path and file: " + e.getMessage());
             return false;
         }
     }

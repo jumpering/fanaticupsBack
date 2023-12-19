@@ -102,15 +102,14 @@ public class CupController {
 //        return ResponseEntity.notFound().build();
 //    }
 
-    @DeleteMapping(value = "/cups/{id}") //FALTA BORRAR IMAGEN!!
+    @DeleteMapping(value = "/cups/{id}")
     public ResponseEntity<Void> deleteCup(@PathVariable Long id){
         CupDTO cupDTO = this.cupService.findCupById(id);
-        String cupName = cupDTO.getName();
-        Long userIdCup = cupDTO.getUser().getId();
-        String path = userIdCup + "/" + cupName + "/";
-        this.fileService.deletePathAndFiles(path); //TODO
-        //this.cupService.delete(id);
-        return null;
-        //return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        String path = cupDTO.getUser().getId() + "/" + cupDTO.getName() + "/";
+        if (this.fileService.deletePathAndFile(path, cupDTO.getImage())){
+            this.cupService.delete(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return ResponseEntity.badRequest().build();
     }
 }
