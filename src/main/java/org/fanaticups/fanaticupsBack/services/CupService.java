@@ -1,5 +1,13 @@
 package org.fanaticups.fanaticupsBack.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.fanaticups.fanaticupsBack.models.RequestBodyCreateCup;
+import org.fanaticups.fanaticupsBack.models.RequestBodyUpdateCup;
+import org.fanaticups.fanaticupsBack.security.dao.UserEntity;
+import org.fanaticups.fanaticupsBack.security.dao.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +18,7 @@ import java.util.Optional;
 import org.fanaticups.fanaticupsBack.dao.entities.CupEntity;
 import org.fanaticups.fanaticupsBack.dao.repositories.CupRepository;
 import org.fanaticups.fanaticupsBack.models.CupDTO;
+
 import org.modelmapper.ModelMapper;
 
 @Service
@@ -18,8 +27,10 @@ public class CupService {
     @Autowired
     private CupRepository cupRepository;
     private final ModelMapper modelMapper = new ModelMapper();
-    //private String imagePath = "assets/images/";
-    //private String imagePath = "///Users/xaviergomezcanals/Documents/Projects/fanaticups/images/";
+    private final ObjectMapper objectMapper = new ObjectMapper(); //Jackson mapper
+
+    @Autowired
+    private UserRepository userRepository;
 
     public List<CupDTO> findAllCups(){
         List<CupEntity> cupsEntities;
@@ -35,38 +46,25 @@ public class CupService {
         return cupsDTO;
     }
 
-    public CupDTO findCupById(Long id){
-        Optional<CupEntity> cupEntity = this.cupRepository.findById(id);
-        if(cupEntity.isPresent()){
-            CupEntity cup = cupEntity.get();
-            String imagePath = cup.getUser().getId() + "/" + cup.getName() + "/";
-            cup.setImage(imagePath + cup.getImage());
-            return this.modelMapper.map(cup, CupDTO.class);
+    public Optional<CupDTO> findCupById(Long id){
+        Optional<CupEntity> optionalCupEntity = this.cupRepository.findById(id);
+        if(optionalCupEntity.isPresent()){
+            CupEntity cupEntity = optionalCupEntity.get();
+            String imagePath = cupEntity.getUser().getId() + "/" + cupEntity.getName() + "/";
+            cupEntity.setImage(imagePath + cupEntity.getImage());
+            return Optional.of(this.modelMapper.map(cupEntity, CupDTO.class));
         }
-        return null;
+        return Optional.empty();
     }
 
-    public CupDTO add(CupDTO cupDTO){
-        boolean exist = this.cupRepository.existsByName(cupDTO.getName());
-        if(!exist){
-            CupEntity cupEntity = this.modelMapper.map(cupDTO ,CupEntity.class);
-            this.cupRepository.save(cupEntity);
-            cupDTO = this.modelMapper.map(cupEntity, CupDTO.class);
-            return cupDTO;
-        }
-            return null;
+    public Optional<CupDTO> add(RequestBodyCreateCup requestBodyCreateCup) throws JsonProcessingException {
+        Optional<UserEntity> userEntity = this.userRepository.findById(Math.toIntExact(Long.parseLong(requestBodyCreateCup.getUserId())));
+        CupDTO cupDTO = this.objectMapper.readValue(requestBodyCreateCup.getCup(), CupDTO.class);
+        cupDTO.setUser(userEntity.get());
+        CupEntity cupEntity = this.cupRepository.save(this.modelMapper.map(cupDTO, CupEntity.class));
+        cupDTO = this.modelMapper.map(cupEntity, CupDTO.class);
+        return Optional.of(cupDTO);
     }
-
-//    public Optional<List<CupDTO>> findAllCupsFromUser(Long id) {
-//        List<CupEntity> cupListEntity = this.cupRepository.findAllByUserId(id);
-//        if(!cupListEntity.isEmpty()){
-//            List<CupDTO> cupListDTO = cupListEntity.stream()
-//                    .map(element -> this.modelMapper.map(element, CupDTO.class))
-//                    .toList();
-//            return Optional.of(cupListDTO);
-//        }
-//        return Optional.empty();
-//    }
 
     public Boolean existCupByUserIdAndCupName(String userId, String name) {
         return this.cupRepository.existsByUser_IdAndName(Long.valueOf(userId), name);
@@ -74,5 +72,12 @@ public class CupService {
 
     public void delete(Long id) {
         this.cupRepository.deleteById(id);
+    }
+
+    public Optional<CupDTO> updateCupById(RequestBodyUpdateCup requestBodyUpdateCup) throws JsonProcessingException {
+        CupDTO cupDTO = this.objectMapper.readValue(requestBodyUpdateCup.getCupId(), CupDTO.class);
+        CupEntity cupEntity = this.modelMapper.map(cupDTO, CupEntity.class);
+        this.cupRepository.update(cupEntity);
+        return Optional.empty();
     }
 }

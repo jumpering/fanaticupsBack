@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RequestBodyCreateCup {
+public class RequestBodyUpdateCup {
 
-    private String userId;
+    private String cupId;
     private String cup;
 }
