@@ -6,6 +6,7 @@ import org.fanaticups.fanaticupsBack.models.CupDTO;
 import org.fanaticups.fanaticupsBack.security.dao.UserEntity;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,13 +26,10 @@ class CupServiceTest {
     private CupRepository cupRepository;
     @InjectMocks
     private CupService cupService;
-
     private CupDTO cupOne;
-    private CupDTO cupTwo;
-    private CupDTO cupThree;
-
     private CupEntity cupOneEntity;
     private UserEntity userEntity;
+    private String imagePath;
     @BeforeEach
     void setUp() {
         this.userEntity = UserEntity.builder()
@@ -50,18 +49,28 @@ class CupServiceTest {
                 .image("image.jpg")
                 .user(this.userEntity)
                 .build();
+        this.imagePath = this.userEntity.getId() + "/" + this.cupOneEntity.getName() + "/";
     }
-
+    @DisplayName("ServiceCup method findAllCups()")
     @Test
     public void givenRequestAllCupsWhenFindAllCupsInServiceThenReturnAllCups(){
         List<CupEntity> cupListEntityForMock = new ArrayList<>();
         cupListEntityForMock.add(this.cupOneEntity);
         Mockito.when(this.cupRepository.findAll()).thenReturn(cupListEntityForMock);
-        String imagePath = this.userEntity.getId() + "/" + this.cupOneEntity.getName() + "/";
         List<CupDTO> cupListExpected = new ArrayList<>();
-        this.cupOne.setImage(imagePath + "image.jpg");
+        this.cupOne.setImage(this.imagePath + "image.jpg");
         cupListExpected.add(this.cupOne);
         List<CupDTO> result = this.cupService.findAllCups();
         Assertions.assertEquals(cupListExpected, result);
     }
+
+    @DisplayName("ServiceCup method findCupById existing id")
+    @Test
+    public void givenRequestExistOneCupWhenFindByIdThenReturnOptionalCup(){
+        Mockito.when(this.cupRepository.findById(1L)).thenReturn(Optional.ofNullable(this.cupOneEntity));
+        this.cupOne.setImage(this.imagePath + "image.jpg");
+        CupDTO cupDTOExpected = this.cupOne;
+        Assertions.assertEquals(Optional.of(cupDTOExpected), this.cupService.findCupById(1L));
+    }
+
 }
