@@ -1,6 +1,9 @@
 package org.fanaticups.fanaticupsBack.dao.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import org.fanaticups.fanaticupsBack.security.dao.UserEntity;
 
 import jakarta.persistence.Column;
@@ -14,6 +17,9 @@ import lombok.Data;
 
 @Data
 @Entity(name = "cups")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class CupEntity {
 
     @Id
