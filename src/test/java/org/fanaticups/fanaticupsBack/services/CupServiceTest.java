@@ -73,4 +73,12 @@ class CupServiceTest {
         Assertions.assertEquals(Optional.of(cupDTOExpected), this.cupService.findCupById(1L));
     }
 
+    @DisplayName("ServiceCup method findCupById NO existing id")
+    @Test
+    public void givenRequestNoExistOneCupWhenFindByIdThenReturnOptionalEmpty(){
+        Mockito.when(this.cupRepository.findById(2L)).thenReturn(Optional.empty());
+        this.cupOne.setImage(this.imagePath + "image.jpg");
+        Assertions.assertEquals(Optional.empty(), this.cupService.findCupById(2L));
+    }
+
 }
