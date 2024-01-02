@@ -3,6 +3,7 @@ package org.fanaticups.fanaticupsBack.dao.repositories;
 import java.util.List;
 import java.util.Optional;
 
+import jakarta.validation.constraints.NotNull;
 import org.fanaticups.fanaticupsBack.dao.entities.CupEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -14,12 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface CupRepository extends JpaRepository<CupEntity, Long>{
     @Transactional
-    default CupEntity update(CupEntity cupEntity){
+    default CupEntity update(CupEntity cupEntity){ //TODO
         CupEntity actualCup = this.findById(cupEntity.getId()).orElse(null);
         if(actualCup != null){
             actualCup.setName(cupEntity.getName());
         }
-
         return null;
     }
 
@@ -27,7 +27,7 @@ public interface CupRepository extends JpaRepository<CupEntity, Long>{
 
     public Optional<CupEntity> findById(Long id);
 
-    public boolean existsByName(String name);
+    public void deleteById(Long id);
 
     public boolean existsByUser_IdAndName(Long userId, String name);
 
