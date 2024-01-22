@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import jakarta.validation.constraints.NotNull;
 import org.fanaticups.fanaticupsBack.dao.entities.CupEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -23,7 +25,9 @@ public interface CupRepository extends JpaRepository<CupEntity, Long>{
         return null;
     }
 
-    public List<CupEntity> findAll();
+    //public List<CupEntity> findAll();
+
+    public Page<CupEntity> findAll(Pageable pageable);
 
     public Optional<CupEntity> findById(Long id);
 

@@ -32,7 +32,7 @@ public class FileService {
         }
     }
 
-    public boolean deletePathAndFile(String path, String cupImage){
+    public boolean deletePathAndFile(String path){
         Path directoryPath = Paths.get(this.pathDirectory, path);
         try {
             List<Path> pathsToDelete = Files.walk(directoryPath, FileVisitOption.FOLLOW_LINKS)
@@ -44,5 +44,12 @@ public class FileService {
             System.out.println("error deleting path and file: " + e.getMessage());
             return false;
         }
+    }
+
+    public boolean updateFile(String newImagePath, String oldImagePath, MultipartFile file){
+        if(this.deletePathAndFile(oldImagePath)){
+           return this.uploadFile(newImagePath, file);
+        }
+        return false;
     }
 }

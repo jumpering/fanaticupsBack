@@ -9,10 +9,10 @@ import org.fanaticups.fanaticupsBack.security.dao.UserEntity;
 import org.fanaticups.fanaticupsBack.security.dao.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import org.fanaticups.fanaticupsBack.dao.entities.CupEntity;
@@ -32,18 +32,27 @@ public class CupService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<CupDTO> findAllCups(){
-        List<CupEntity> cupsEntities;
-        List<CupDTO> cupsDTO = new ArrayList<CupDTO>();
-        cupsEntities = this.cupRepository.findAll();
-        cupsEntities.forEach(element -> {
+//    public List<CupDTO> findAllCups(){
+//        List<CupEntity> cupsEntities;
+//        List<CupDTO> cupsDTO = new ArrayList<CupDTO>();
+//        cupsEntities = this.cupRepository.findAll();
+//        cupsEntities.forEach(element -> {
+//            String imagePath = element.getUser().getId() + "/" + element.getName() + "/";
+//            element.setImage(imagePath + element.getImage());
+//        });
+//        cupsEntities.forEach(element -> cupsDTO.add(
+//            this.modelMapper.map(element, CupDTO.class)
+//        ));
+//        return cupsDTO;
+//    }
+
+    public Page<CupDTO> findAllCups(Pageable pageable){
+        Page<CupEntity> pageCupEntity = this.cupRepository.findAll(pageable);
+        pageCupEntity.forEach(element -> {
             String imagePath = element.getUser().getId() + "/" + element.getName() + "/";
             element.setImage(imagePath + element.getImage());
         });
-        cupsEntities.forEach(element -> cupsDTO.add(
-            this.modelMapper.map(element, CupDTO.class)
-        ));
-        return cupsDTO;
+        return pageCupEntity.map(element -> this.modelMapper.map(element, CupDTO.class));
     }
 
     public Optional<CupDTO> findCupById(Long id){
@@ -74,10 +83,22 @@ public class CupService {
         this.cupRepository.deleteById(id);
     }
 
-    public Optional<CupDTO> updateCupById(RequestBodyUpdateCup requestBodyUpdateCup) throws JsonProcessingException {
-        CupDTO cupDTO = this.objectMapper.readValue(requestBodyUpdateCup.getCupId(), CupDTO.class);
-        CupEntity cupEntity = this.modelMapper.map(cupDTO, CupEntity.class);
-        this.cupRepository.update(cupEntity);
-        return Optional.empty();
+//    public Optional<CupDTO> updateCupById(RequestBodyUpdateCup requestBodyUpdateCup) throws JsonProcessingException {
+//        CupDTO cupDTO = this.objectMapper.readValue(requestBodyUpdateCup.getCupId(), CupDTO.class);
+//        CupEntity cupEntity = this.modelMapper.map(cupDTO, CupEntity.class);
+//        this.cupRepository.update(cupEntity);
+//        return Optional.empty();
+//    }
+
+    public Optional<CupDTO> update(Long id, String cupDTO) throws JsonProcessingException {
+        CupEntity currentCupEntity = this.cupRepository.findById(id).get();
+        CupDTO mappedCupDTO = this.objectMapper.readValue(cupDTO, CupDTO.class);
+        currentCupEntity.setName(mappedCupDTO.getName());
+        currentCupEntity.setOrigin(mappedCupDTO.getOrigin());
+        currentCupEntity.setDescription(mappedCupDTO.getDescription());
+        currentCupEntity.setPrice(mappedCupDTO.getPrice());
+        currentCupEntity.setImage(mappedCupDTO.getImage());
+        CupEntity updatedEntity = this.cupRepository.save(currentCupEntity);
+        return Optional.of(this.modelMapper.map(updatedEntity, CupDTO.class));
     }
 }

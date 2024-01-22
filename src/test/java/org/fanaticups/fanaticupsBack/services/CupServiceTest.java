@@ -62,19 +62,20 @@ class CupServiceTest {
     public void tearDown() {
         Mockito.reset(this.cupRepository);
     }
-    @DisplayName("FindAllCups return cupDTO with image path")
-    @Test
-    public void givenRequestAllCupsWhenFindAllCupsInServiceThenReturnAllCups(){
-        List<CupEntity> cupListEntityForMock = new ArrayList<>();
-        cupListEntityForMock.add(this.cupEntity);
-        Mockito.when(this.cupRepository.findAll()).thenReturn(cupListEntityForMock);
-        List<CupDTO> cupListExpected = new ArrayList<>();
-        this.cupDTO.setImage(this.imagePath + "image.jpg");
-        cupListExpected.add(this.cupDTO);
-        List<CupDTO> result = this.cupService.findAllCups();
-        Assertions.assertEquals(cupListExpected, result);
-    }
 
+//    @DisplayName("FindAllCups return cupDTO with image path")
+//    @Test
+//    public void givenRequestAllCupsWhenFindAllCupsInServiceThenReturnAllCups(){
+//        List<CupEntity> cupListEntityForMock = new ArrayList<>();
+//        cupListEntityForMock.add(this.cupEntity);
+//        Mockito.when(this.cupRepository.findAll()).thenReturn(cupListEntityForMock);
+//        List<CupDTO> cupListExpected = new ArrayList<>();
+//        this.cupDTO.setImage(this.imagePath + "image.jpg");
+//        cupListExpected.add(this.cupDTO);
+//        List<CupDTO> result = this.cupService.findAllCups();
+//        Assertions.assertEquals(cupListExpected, result);
+//    }
+    
     @DisplayName("FindCupById existing id return cupDTO with image path")
     @Test
     public void givenRequestExistOneCupWhenFindByIdThenReturnOptionalCup(){

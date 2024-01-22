@@ -10,6 +10,10 @@ import org.fanaticups.fanaticupsBack.models.RequestBodyUpdateCup;
 import org.fanaticups.fanaticupsBack.services.CupService;
 import org.fanaticups.fanaticupsBack.services.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +33,22 @@ public class CupController {
     @Autowired
     private FileService fileService;
 
-    @Operation(summary = "Get all cups")
+//    @Operation(summary = "Get all cups")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200",
+//                    description = "Found cups",
+//                    content = {
+//                            @Content(mediaType = "application/json",
+//                                    schema = @Schema(implementation = CupDTO.class))}
+//            )})
+//    @CrossOrigin(origins = "http://localhost:4200")
+//    @GetMapping(value = "/cups")
+//    public ResponseEntity<List<CupDTO>> findAllCups() {
+//        List<CupDTO> cupsDTOList = this.cupService.findAllCups();
+//        return cupsDTOList.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(cupsDTOList);
+//    }
+
+    @Operation(summary = "Get all cups pageable")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "Found cups",
@@ -39,14 +58,14 @@ public class CupController {
             )})
     @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping(value = "/cups")
-    public ResponseEntity<List<CupDTO>> findAllCups() {
-        List<CupDTO> cupsDTOList = this.cupService.findAllCups();
+    public ResponseEntity<Page<CupDTO>> findAll(@PageableDefault(page = 0, size = 12) Pageable pageable) {
+        Page<CupDTO> cupsDTOList = this.cupService.findAllCups(pageable);
         return cupsDTOList.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(cupsDTOList);
     }
 
     @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping(value = "/cups/{id}")
-    public ResponseEntity<CupDTO> findCupById(@PathVariable Long id) {
+    public ResponseEntity<CupDTO> findById(@PathVariable Long id) {
         Optional<CupDTO> optionalCupDTO = this.cupService.findCupById(id);
         return optionalCupDTO.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -66,12 +85,12 @@ public class CupController {
     }
 
     @DeleteMapping(value = "/cups/{id}")
-    public ResponseEntity<Void> deleteCup(@PathVariable Long id) { //¿es necesario buscar el cup con findCupById?
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         Optional<CupDTO> optionalCupDTO = this.cupService.findCupById(id);
         if (optionalCupDTO.isPresent()){
             CupDTO cupDTO = optionalCupDTO.get();
             String path = cupDTO.getUser().getId() + "/" + cupDTO.getName() + "/";
-            if (this.fileService.deletePathAndFile(path, cupDTO.getImage())) {
+            if (this.fileService.deletePathAndFile(path)) {
                 this.cupService.delete(id);
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT); //204 response
             }
@@ -79,9 +98,8 @@ public class CupController {
         return ResponseEntity.badRequest().build();
     }
 
-    @PutMapping(value = "/cup/{id}")
-    public ResponseEntity<CupDTO> updateCup(@RequestBody RequestBodyUpdateCup requestBodyUpdateCup) throws JsonProcessingException {
-        Optional<CupDTO> optionalCupDTO = this.cupService.updateCupById(requestBodyUpdateCup);
-        return optionalCupDTO.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.badRequest().build());
+    @PutMapping(value = "/cups/{id}")
+    public ResponseEntity<CupDTO> update(@PathVariable Long id, @RequestBody String cupDTO) throws JsonProcessingException {
+        return ResponseEntity.ok(this.cupService.update(id, cupDTO).get());
     }
 }
