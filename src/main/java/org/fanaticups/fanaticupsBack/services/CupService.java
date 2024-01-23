@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.fanaticups.fanaticupsBack.models.RequestBodyCreateCup;
-import org.fanaticups.fanaticupsBack.models.RequestBodyUpdateCup;
 import org.fanaticups.fanaticupsBack.security.dao.UserEntity;
 import org.fanaticups.fanaticupsBack.security.dao.UserRepository;
 

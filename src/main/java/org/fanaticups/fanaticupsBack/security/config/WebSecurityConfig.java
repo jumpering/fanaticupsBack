@@ -32,17 +32,24 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) //to avoid 403 forbiden error on post
                 //.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((authorize) -> authorize
-//                                .requestMatchers("/authenticate/**").permitAll()
-//                                .requestMatchers("/register/**").permitAll()
-//                                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                                .requestMatchers("/authenticate/**").permitAll()
+                                .requestMatchers("/register/**").permitAll()
+                                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
 //                                .requestMatchers("/v3/api-docs/**").permitAll()
-//                                .requestMatchers(HttpMethod.GET, "/cups").permitAll()
-//                                .requestMatchers(HttpMethod.GET, "/cups/{id}").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/cups").permitAll()
+                                .requestMatchers(HttpMethod.POST,"/cups/**").authenticated()
+
+                                .requestMatchers(HttpMethod.GET, "/cups/{id}").permitAll()
+                                .requestMatchers(HttpMethod.PUT,"/cups/{id}").authenticated()
+                                .requestMatchers(HttpMethod.DELETE,"/cups/{id}").authenticated()
+
 //                                .requestMatchers(HttpMethod.GET, "/cups/user/**").authenticated()
 //                                .requestMatchers(HttpMethod.POST, "/cups/**").authenticated()
-//                                .requestMatchers(HttpMethod.POST, "/files/**").permitAll()
-//                                .anyRequest().authenticated()
-                                .anyRequest().permitAll()
+                                .requestMatchers(HttpMethod.POST, "/files/**").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/images/**").permitAll()
+                                //.requestMatchers(HttpMethod.POST, "/images/**").authenticated()
+                                .anyRequest().authenticated()
+//                                .anyRequest().permitAll()
                                 //.requestMatchers("/authenticate/**").allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH").permiteAll()
 
 
