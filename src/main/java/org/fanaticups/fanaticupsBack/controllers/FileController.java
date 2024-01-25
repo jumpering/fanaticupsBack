@@ -37,7 +37,10 @@ public class FileController {
         String oldImagePath = userId + "/" + originalCupName + "/";
         String newImagePath = userId + "/" + cupName + "/";
         boolean fileSuccessUploaded = this.fileService.updatePathAndFile(newImagePath, oldImagePath, file);
-        return ResponseEntity.ok("File success updated");
+        if(fileSuccessUploaded){
+            return ResponseEntity.ok("File success updated");
+        }
+        return ResponseEntity.badRequest().build();
     }
 
     @PutMapping("/files/updatePath")
@@ -47,7 +50,10 @@ public class FileController {
         String oldPathToRename = userId + "/" + oldPath + "/";
         String newPathToRename = userId + "/" + newPath + "/";
         boolean fileSuccessUploaded = this.fileService.renamePath(oldPathToRename, newPathToRename);
-        return ResponseEntity.ok("File success updated");
+        if(fileSuccessUploaded){
+            return ResponseEntity.ok("File success updated");
+        }
+        return ResponseEntity.badRequest().build();
     }
 }
 
