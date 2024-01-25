@@ -46,9 +46,41 @@ public class FileService {
         }
     }
 
-    public boolean updateFile(String newImagePath, String oldImagePath, MultipartFile file){
+    public boolean renamePath(String oldPath, String newPath){
+        //Path oldDirectoryPath = Paths.get(this.pathDirectory, oldPath);
+        //Path newDirectoryPath = Paths.get(this.pathDirectory, newPath);
+//        if(Files.isDirectory(oldDirectoryPath)){
+//            try {
+//                Files.move(oldDirectoryPath, newDirectoryPath);
+//                return true;
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
+
+
+//        try {
+//            Files.move(oldDirectoryPath, newDirectoryPath, StandardCopyOption.REPLACE_EXISTING);
+//            System.out.println("EUREKAKAAAAAAAAAAAAAAAaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+//            return true;
+//        } catch (IOException e) {
+//            System.out.println("error renaming path: " + e.getMessage());
+//        }
+
+
+        File oldDirectoryPath = new File(this.pathDirectory + oldPath);
+        System.out.println("OLD: " + oldDirectoryPath);
+        File newDirectoryPath = new File(this.pathDirectory + newPath);
+        System.out.println("NEW: " + newDirectoryPath);
+        //if(oldDirectoryPath.isDirectory()){
+            return oldDirectoryPath.renameTo(newDirectoryPath);
+        //}
+        //return false;
+    }
+
+    public boolean updatePathAndFile(String newImagePath, String oldImagePath, MultipartFile file){
         if(this.deletePathAndFile(oldImagePath)){
-           return this.uploadFile(newImagePath, file);
+            return this.uploadFile(newImagePath, file);
         }
         return false;
     }

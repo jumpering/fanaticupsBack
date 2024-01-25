@@ -29,15 +29,24 @@ public class FileController {
     }
 
     @PutMapping("/files")
-    public ResponseEntity<String> updateUpload(@RequestParam("file") MultipartFile file,
+    public ResponseEntity<String> updatePathAndFile(@RequestParam("file") MultipartFile file,
                                                @RequestParam("userId") String userId,
                                                @RequestParam("cupName") String cupName,
                                                @RequestParam("cupId") String cupId){
-        //debería saber el nombre anterior de la taza para saber el nombre del directorio que tengo que renombrar.
         String originalCupName = this.cupService.findCupById(Long.valueOf(cupId)).get().getName();
         String oldImagePath = userId + "/" + originalCupName + "/";
         String newImagePath = userId + "/" + cupName + "/";
-        boolean fileSuccessUploaded = this.fileService.updateFile(newImagePath, oldImagePath, file);
+        boolean fileSuccessUploaded = this.fileService.updatePathAndFile(newImagePath, oldImagePath, file);
+        return ResponseEntity.ok("File success updated");
+    }
+
+    @PutMapping("/files/updatePath")
+    public ResponseEntity<String> updatePath(@RequestParam("userId") String userId,
+                                               @RequestParam("oldPath") String oldPath,
+                                               @RequestParam("newPath") String newPath){
+        String oldPathToRename = userId + "/" + oldPath + "/";
+        String newPathToRename = userId + "/" + newPath + "/";
+        boolean fileSuccessUploaded = this.fileService.renamePath(oldPathToRename, newPathToRename);
         return ResponseEntity.ok("File success updated");
     }
 }
