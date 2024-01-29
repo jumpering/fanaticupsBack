@@ -1,6 +1,7 @@
 package org.fanaticups.fanaticupsBack.security.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.StaticResourceLocation;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -43,7 +44,7 @@ public class WebSecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/cups/{id}").permitAll()
                                 .requestMatchers(HttpMethod.PUT,"/cups/{id}").authenticated()
                                 .requestMatchers(HttpMethod.DELETE,"/cups/{id}").authenticated()
-
+        .requestMatchers(toStaticResources().atCommonLocations()).permitAll()
 //                                .requestMatchers(HttpMethod.GET, "/cups/user/**").authenticated()
 //                                .requestMatchers(HttpMethod.POST, "/cups/**").authenticated()
                                 .requestMatchers(HttpMethod.GET, "/files/**").permitAll()
