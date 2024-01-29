@@ -46,6 +46,7 @@ public class WebSecurityConfig {
 //                                .requestMatchers(HttpMethod.GET, "/cups/user/**").authenticated()
 //                                .requestMatchers(HttpMethod.POST, "/cups/**").authenticated()
                                 .requestMatchers(HttpMethod.POST, "/files/**").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/files/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/images/**").permitAll()
                                 //.requestMatchers(HttpMethod.POST, "/images/**").authenticated()
                                 .anyRequest().authenticated()
