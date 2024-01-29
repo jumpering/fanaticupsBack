@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toStaticResources;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -45,9 +46,13 @@ public class WebSecurityConfig {
 
 //                                .requestMatchers(HttpMethod.GET, "/cups/user/**").authenticated()
 //                                .requestMatchers(HttpMethod.POST, "/cups/**").authenticated()
-                                .requestMatchers(HttpMethod.POST, "/files/**").authenticated()
                                 .requestMatchers(HttpMethod.GET, "/files/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/files/**").authenticated()
                                 .requestMatchers(HttpMethod.GET, "/images/**").permitAll()
+
+
+
+
                                 //.requestMatchers(HttpMethod.POST, "/images/**").authenticated()
                                 .anyRequest().authenticated()
 //                                .anyRequest().permitAll()
