@@ -33,7 +33,7 @@ public class CorsConfig {
         registry.addMapping("/**")
         //.allowedOrigins("http://localhost:4200")
 
-        .allowedOrigins("https://faanaticupsfront.onrender.com, http://localhost:4200")
+        .allowedOrigins("https://fanaticups.onrender.com, https://fanaticups.onrender.com/files, http://localhost:4200")
         .allowedMethods("*")
         .exposedHeaders("*");
 
