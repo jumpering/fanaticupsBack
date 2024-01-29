@@ -54,6 +54,7 @@ public class CupController {
                                     schema = @Schema(implementation = CupDTO.class))}
             )})
     //@CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin
     @GetMapping(value = "/cups")
     public ResponseEntity<Page<CupDTO>> findAll(@PageableDefault(page = 0, size = 12) Pageable pageable) {
         Page<CupDTO> cupsDTOList = this.cupService.findAllCups(pageable);

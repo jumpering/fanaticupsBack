@@ -31,7 +31,8 @@ public class CorsConfig {
       public void addCorsMappings(CorsRegistry registry){
 
         registry.addMapping("/**")
-        .allowedOrigins("http://localhost:4200","https://faanaticupsfront.onrender.com")
+        //.allowedOrigins("http://localhost:4200")
+        .allowedOrigins("https://faanaticupsfront.onrender.com")
         .allowedMethods("*")
         .exposedHeaders("*");
 
