@@ -50,6 +50,7 @@ public class WebSecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/files/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/files/**").authenticated()
                                 .requestMatchers(HttpMethod.GET, "/images/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "file:/Users/xaviergomezcanals/Documents/Projects/fanaticups/images/**").permitAll()
 
 
 
