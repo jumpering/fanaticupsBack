@@ -48,10 +48,6 @@ public class WebSecurityConfig {
 //                                .requestMatchers(HttpMethod.GET, "/images/**").permitAll()
 //                                .requestMatchers(HttpMethod.GET, "file:/Users/xaviergomezcanals/Documents/Projects/fanaticups/images/**").permitAll()
 //                                .requestMatchers(HttpMethod.GET,"/resources/**").permitAll()
-
-
-
-
 //                                .anyRequest().authenticated()
                                 .anyRequest().permitAll()
                                 //.requestMatchers("/authenticate/**").allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH").permiteAll()
