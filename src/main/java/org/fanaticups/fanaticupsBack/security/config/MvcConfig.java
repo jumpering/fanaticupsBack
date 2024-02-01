@@ -11,8 +11,10 @@ public class MvcConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry
+//                .addResourceHandler("/images/**")
+//                .addResourceLocations("file:/Users/xaviergomezcanals/Documents/Projects/fanaticups/images/");
                 .addResourceHandler("/images/**")
-                .addResourceLocations("file:/Users/xaviergomezcanals/Documents/Projects/fanaticups/images/");
+                .addResourceLocations("http://5.250.190.45/images/");
         WebMvcConfigurer.super.addResourceHandlers(registry);
     }
 }
