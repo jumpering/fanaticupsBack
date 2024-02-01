@@ -3,6 +3,8 @@ COPY . .
 RUN mvn clean package -DskipTests
 
 COPY Bilma.jpg /Users/xaviergomezcanals/Documents/Projects/fanaticups/images/AAA
+COPY Bilma.jpg /src/reources/static
+COPY Bilma.jpg /src/reources
 
 FROM eclipse-temurin:17-jdk
 COPY --from=build /target/fanaticupsBack-0.0.1-SNAPSHOT.jar fanaticupsBack.jar
