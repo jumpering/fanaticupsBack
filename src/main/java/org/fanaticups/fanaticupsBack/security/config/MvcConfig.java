@@ -14,7 +14,7 @@ public class MvcConfig implements WebMvcConfigurer {
 //                .addResourceHandler("/images/**")
 //                .addResourceLocations("file:/Users/xaviergomezcanals/Documents/Projects/fanaticups/images/");
                 .addResourceHandler("/images/**")
-                .addResourceLocations("https://5.250.190.45/images/");
+                .addResourceLocations("https://5.250.184.31/images/");
         WebMvcConfigurer.super.addResourceHandlers(registry);
     }
 }
