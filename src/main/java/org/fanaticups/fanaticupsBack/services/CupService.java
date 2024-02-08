@@ -3,6 +3,13 @@ package org.fanaticups.fanaticupsBack.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.minio.BucketExistsArgs;
+import io.minio.GetObjectArgs;
+import io.minio.GetPresignedObjectUrlArgs;
+import io.minio.MinioClient;
+import io.minio.errors.*;
+import io.minio.http.Method;
+import io.minio.messages.Bucket;
 import org.fanaticups.fanaticupsBack.models.RequestBodyCreateCup;
 import org.fanaticups.fanaticupsBack.security.dao.UserEntity;
 import org.fanaticups.fanaticupsBack.security.dao.UserRepository;
@@ -12,7 +19,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import org.fanaticups.fanaticupsBack.dao.entities.CupEntity;
 import org.fanaticups.fanaticupsBack.dao.repositories.CupRepository;
@@ -45,6 +59,8 @@ public class CupService {
 //        return cupsDTO;
 //    }
 
+
+    //THIS IS WORKING NOW !!!!!!
     public Page<CupDTO> findAllCups(Pageable pageable){
         Page<CupEntity> pageCupEntity = this.cupRepository.findAll(pageable);
         pageCupEntity.forEach(element -> {
@@ -53,6 +69,56 @@ public class CupService {
         });
         return pageCupEntity.map(element -> this.modelMapper.map(element, CupDTO.class));
     }
+
+//TRY WITH S3 MINIO ON MY VPS IONOS
+/*    public Page<CupDTO> findAllCups(Pageable pageable){
+        Page<CupEntity> pageCupEntity = this.cupRepository.findAll(pageable);
+
+
+        try {
+            MinioClient minioClient =
+                    MinioClient.builder()
+                            .endpoint("http://5.250.190.45",9000,false)
+                            .credentials("minioadmin", "minioadmin")
+                            .build();
+
+            List<Bucket> allBuckets = new ArrayList<>();
+            allBuckets = minioClient.listBuckets();
+            System.out.println("TEST IF EXIST BUCKET: " + minioClient.bucketExists(BucketExistsArgs.builder().bucket("fanaticups-bucket").build()));
+            for(Bucket bucket: allBuckets){
+                System.out.println("BUCKET NAME: " + bucket.name());
+            }
+
+
+//            String url =
+//                    minioClient.getPresignedObjectUrl(
+//                            GetPresignedObjectUrlArgs.builder()
+//                                    .method(Method.GET)
+//                                    .bucket("fanaticups-bucket-1-AAA")
+//                                    .object("Bilma.jpg")
+//                                    .expiry(2, TimeUnit.HOURS)
+//                                    .build());
+//            System.out.println("URL DE LA IMAGEN?¿?¿: " + url);
+
+
+
+
+        } catch (Exception e) {
+            System.out.println("EXCEPCIÖN LANZADA!");
+            throw new RuntimeException(e);
+
+        }
+
+
+
+
+
+        pageCupEntity.forEach(element -> {
+            String imagePath = element.getUser().getId() + "/" + element.getName() + "/";
+            element.setImage(imagePath + element.getImage());
+        });
+        return pageCupEntity.map(element -> this.modelMapper.map(element, CupDTO.class));
+    }*/
 
     public Optional<CupDTO> findCupById(Long id){
         Optional<CupEntity> optionalCupEntity = this.cupRepository.findById(id);

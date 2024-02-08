@@ -16,7 +16,8 @@ public class FileService {
 
     private String pathDirectory = "///Users/xaviergomezcanals/Documents/Projects/fanaticups/images/";
 
-    public boolean uploadFile(String path, MultipartFile file){
+
+    public boolean uploadFile(String path, MultipartFile file) {
         String imageName = file.getOriginalFilename();
         String imagePath = this.pathDirectory.concat(path);
         try {
@@ -32,7 +33,7 @@ public class FileService {
         }
     }
 
-    public boolean deletePathAndFile(String path){
+    public boolean deletePathAndFile(String path) {
         Path directoryPath = Paths.get(this.pathDirectory, path);
         try {
             List<Path> pathsToDelete = Files.walk(directoryPath, FileVisitOption.FOLLOW_LINKS)
@@ -46,40 +47,16 @@ public class FileService {
         }
     }
 
-    public boolean renamePath(String oldPath, String newPath){
-        //Path oldDirectoryPath = Paths.get(this.pathDirectory, oldPath);
-        //Path newDirectoryPath = Paths.get(this.pathDirectory, newPath);
-//        if(Files.isDirectory(oldDirectoryPath)){
-//            try {
-//                Files.move(oldDirectoryPath, newDirectoryPath);
-//                return true;
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
-//        }
-
-
-//        try {
-//            Files.move(oldDirectoryPath, newDirectoryPath, StandardCopyOption.REPLACE_EXISTING);
-//            System.out.println("EUREKAKAAAAAAAAAAAAAAAaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-//            return true;
-//        } catch (IOException e) {
-//            System.out.println("error renaming path: " + e.getMessage());
-//        }
-
-
+    public boolean renamePath(String oldPath, String newPath) {
         File oldDirectoryPath = new File(this.pathDirectory + oldPath);
         System.out.println("OLD: " + oldDirectoryPath);
         File newDirectoryPath = new File(this.pathDirectory + newPath);
         System.out.println("NEW: " + newDirectoryPath);
-        //if(oldDirectoryPath.isDirectory()){
-            return oldDirectoryPath.renameTo(newDirectoryPath);
-        //}
-        //return false;
+        return oldDirectoryPath.renameTo(newDirectoryPath);
     }
 
-    public boolean updatePathAndFile(String newImagePath, String oldImagePath, MultipartFile file){
-        if(this.deletePathAndFile(oldImagePath)){
+    public boolean updatePathAndFile(String newImagePath, String oldImagePath, MultipartFile file) {
+        if (this.deletePathAndFile(oldImagePath)) {
             return this.uploadFile(newImagePath, file);
         }
         return false;
