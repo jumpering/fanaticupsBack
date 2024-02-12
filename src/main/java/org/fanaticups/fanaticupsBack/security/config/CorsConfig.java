@@ -33,7 +33,7 @@ public class CorsConfig {
         registry.addMapping("/**")
         //.allowedOrigins("http://localhost:4200")
 
-        .allowedOrigins("https://fanaticups.onrender.com, http://fanaticups.org, https://fanaticups.org, http://www.fanaticups.org,https://www.fanaticups.org, http://5.250.184.31:4200, http://5.250.184.31, https://fanaticups.onrender.com/files, http://localhost:4200")
+        .allowedOrigins("https://fanaticups.org/api, https://fanaticups.onrender.com, http://fanaticups.org, https://fanaticups.org, http://www.fanaticups.org,https://www.fanaticups.org, http://5.250.184.31:4200, http://5.250.184.31, https://fanaticups.onrender.com/files, http://localhost:4200")
         .allowedMethods("*")
         .exposedHeaders("*");
 
