@@ -55,7 +55,7 @@ public class CupController {
             )})
     //@CrossOrigin(origins = "http://localhost:4200")
     @CrossOrigin
-    @GetMapping(value = "/cups")
+    @GetMapping(value = "/api/cups")
     public ResponseEntity<Page<CupDTO>> findAll(@PageableDefault(page = 0, size = 12) Pageable pageable) {
         Page<CupDTO> cupsDTOList = this.cupService.findAllCups(pageable);
         return cupsDTOList.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(cupsDTOList);
