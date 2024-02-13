@@ -22,6 +22,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
+@RequestMapping("/api")
 public class CupController {
 
     @Autowired
@@ -55,7 +56,7 @@ public class CupController {
             )})
     //@CrossOrigin(origins = "http://localhost:4200")
     @CrossOrigin
-    @GetMapping(value = "/api/cups")
+    @GetMapping(value = "/cups")
     public ResponseEntity<Page<CupDTO>> findAll(@PageableDefault(page = 0, size = 12) Pageable pageable) {
         Page<CupDTO> cupsDTOList = this.cupService.findAllCups(pageable);
         return cupsDTOList.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(cupsDTOList);
