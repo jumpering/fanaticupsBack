@@ -15,6 +15,7 @@ import org.fanaticups.fanaticupsBack.security.dao.UserEntity;
 import org.fanaticups.fanaticupsBack.security.dao.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,9 @@ public class CupService {
     private final ModelMapper modelMapper = new ModelMapper();
     private final ObjectMapper objectMapper = new ObjectMapper(); //Jackson mapper
 
+    @Value("${apiMinio}")
+    private String imageMinioUrl;
+
     @Autowired
     private UserRepository userRepository;
 
@@ -61,34 +65,38 @@ public class CupService {
 
 
     //THIS IS WORKING NOW !!!!!!
+//    public Page<CupDTO> findAllCups(Pageable pageable){
+//        Page<CupEntity> pageCupEntity = this.cupRepository.findAll(pageable);
+//        pageCupEntity.forEach(element -> {
+//            String imagePath = element.getUser().getId() + "/" + element.getName() + "/";
+//            element.setImage(imagePath + element.getImage());
+//        });
+//        return pageCupEntity.map(element -> this.modelMapper.map(element, CupDTO.class));
+//    }
+
+//TRY WITH S3 MINIO ON MY VPS IONOS
     public Page<CupDTO> findAllCups(Pageable pageable){
         Page<CupEntity> pageCupEntity = this.cupRepository.findAll(pageable);
-        pageCupEntity.forEach(element -> {
-            String imagePath = element.getUser().getId() + "/" + element.getName() + "/";
+
+        try {
+//            MinioClient minioClient =
+//                    MinioClient.builder()
+//                            .endpoint("http://5.250.184.31",9000,false)
+//                            .credentials("DjjGWp1QpWL87Q9Z7fJT", "BaoeKiv67fBHJmwJan5se7NXcLyImYeAUeMRNKWY")
+//                            .build();
+
+            pageCupEntity.forEach(element -> {
+            String imagePath = this.imageMinioUrl + element.getUser().getId() + "/" + element.getName() + "/";
             element.setImage(imagePath + element.getImage());
         });
         return pageCupEntity.map(element -> this.modelMapper.map(element, CupDTO.class));
-    }
 
-//TRY WITH S3 MINIO ON MY VPS IONOS
-/*    public Page<CupDTO> findAllCups(Pageable pageable){
-        Page<CupEntity> pageCupEntity = this.cupRepository.findAll(pageable);
-
-
-        try {
-            MinioClient minioClient =
-                    MinioClient.builder()
-                            .endpoint("http://5.250.190.45",9000,false)
-                            .credentials("minioadmin", "minioadmin")
-                            .build();
-
-            List<Bucket> allBuckets = new ArrayList<>();
-            allBuckets = minioClient.listBuckets();
-            System.out.println("TEST IF EXIST BUCKET: " + minioClient.bucketExists(BucketExistsArgs.builder().bucket("fanaticups-bucket").build()));
-            for(Bucket bucket: allBuckets){
-                System.out.println("BUCKET NAME: " + bucket.name());
-            }
-
+//            List<Bucket> allBuckets = new ArrayList<>();
+//            allBuckets = minioClient.listBuckets();
+//            System.out.println("TEST IF EXIST BUCKET: " + minioClient.bucketExists(BucketExistsArgs.builder().bucket("images").build()));
+//            for(Bucket bucket: allBuckets){
+//                System.out.println("BUCKET NAME: " + bucket.name());
+//            }
 
 //            String url =
 //                    minioClient.getPresignedObjectUrl(
@@ -100,31 +108,16 @@ public class CupService {
 //                                    .build());
 //            System.out.println("URL DE LA IMAGEN?¿?¿: " + url);
 
-
-
-
         } catch (Exception e) {
-            System.out.println("EXCEPCIÖN LANZADA!");
             throw new RuntimeException(e);
-
         }
-
-
-
-
-
-        pageCupEntity.forEach(element -> {
-            String imagePath = element.getUser().getId() + "/" + element.getName() + "/";
-            element.setImage(imagePath + element.getImage());
-        });
-        return pageCupEntity.map(element -> this.modelMapper.map(element, CupDTO.class));
-    }*/
+    }
 
     public Optional<CupDTO> findCupById(Long id){
         Optional<CupEntity> optionalCupEntity = this.cupRepository.findById(id);
         if(optionalCupEntity.isPresent()){
             CupEntity cupEntity = optionalCupEntity.get();
-            String imagePath = cupEntity.getUser().getId() + "/" + cupEntity.getName() + "/";
+            String imagePath = this.imageMinioUrl  + cupEntity.getUser().getId() + "/" + cupEntity.getName() + "/";
             cupEntity.setImage(imagePath + cupEntity.getImage());
             return Optional.of(this.modelMapper.map(cupEntity, CupDTO.class));
         }
