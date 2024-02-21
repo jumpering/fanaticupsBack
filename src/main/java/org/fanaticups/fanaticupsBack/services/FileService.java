@@ -16,7 +16,6 @@ public class FileService {
 
     private String pathDirectory = "///Users/xaviergomezcanals/Documents/Projects/fanaticups/images/";
 
-
     public boolean uploadFile(String path, MultipartFile file) {
         String imageName = file.getOriginalFilename();
         String imagePath = this.pathDirectory.concat(path);

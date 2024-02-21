@@ -42,7 +42,7 @@ public class AuthController {
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    // @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/authenticate")
     public ResponseEntity<TokenInfo> authenticate(@RequestBody AuthenticationReq authenticationReq) {
 
@@ -56,6 +56,7 @@ public class AuthController {
         return ResponseEntity.ok().headers(responseHeaders).build();
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/register")
     public ResponseEntity<TokenInfo> register(@RequestBody RegisterReq registerReq ){
 

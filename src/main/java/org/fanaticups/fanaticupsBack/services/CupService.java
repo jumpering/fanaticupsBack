@@ -43,90 +43,40 @@ public class CupService {
     private final ModelMapper modelMapper = new ModelMapper();
     private final ObjectMapper objectMapper = new ObjectMapper(); //Jackson mapper
 
-    @Value("${apiMinio}")
+    @Value("${apiRootImagesMinio}")
     private String imageMinioUrl;
 
     @Autowired
     private UserRepository userRepository;
 
-//    public List<CupDTO> findAllCups(){
-//        List<CupEntity> cupsEntities;
-//        List<CupDTO> cupsDTO = new ArrayList<CupDTO>();
-//        cupsEntities = this.cupRepository.findAll();
-//        cupsEntities.forEach(element -> {
-//            String imagePath = element.getUser().getId() + "/" + element.getName() + "/";
-//            element.setImage(imagePath + element.getImage());
-//        });
-//        cupsEntities.forEach(element -> cupsDTO.add(
-//            this.modelMapper.map(element, CupDTO.class)
-//        ));
-//        return cupsDTO;
-//    }
-
-
-    //THIS IS WORKING NOW !!!!!!
-//    public Page<CupDTO> findAllCups(Pageable pageable){
-//        Page<CupEntity> pageCupEntity = this.cupRepository.findAll(pageable);
-//        pageCupEntity.forEach(element -> {
-//            String imagePath = element.getUser().getId() + "/" + element.getName() + "/";
-//            element.setImage(imagePath + element.getImage());
-//        });
-//        return pageCupEntity.map(element -> this.modelMapper.map(element, CupDTO.class));
-//    }
-
-//TRY WITH S3 MINIO ON MY VPS IONOS
-    public Page<CupDTO> findAllCups(Pageable pageable){
+    public Page<CupDTO> findAllCups(Pageable pageable) {
         Page<CupEntity> pageCupEntity = this.cupRepository.findAll(pageable);
-
-        try {
-//            MinioClient minioClient =
-//                    MinioClient.builder()
-//                            .endpoint("http://5.250.184.31",9000,false)
-//                            .credentials("DjjGWp1QpWL87Q9Z7fJT", "BaoeKiv67fBHJmwJan5se7NXcLyImYeAUeMRNKWY")
-//                            .build();
-
-            pageCupEntity.forEach(element -> {
+        pageCupEntity.forEach(element -> {
             String imagePath = this.imageMinioUrl + element.getUser().getId() + "/" + element.getName() + "/";
             element.setImage(imagePath + element.getImage());
         });
         return pageCupEntity.map(element -> this.modelMapper.map(element, CupDTO.class));
-
-//            List<Bucket> allBuckets = new ArrayList<>();
-//            allBuckets = minioClient.listBuckets();
-//            System.out.println("TEST IF EXIST BUCKET: " + minioClient.bucketExists(BucketExistsArgs.builder().bucket("images").build()));
-//            for(Bucket bucket: allBuckets){
-//                System.out.println("BUCKET NAME: " + bucket.name());
-//            }
-
-//            String url =
-//                    minioClient.getPresignedObjectUrl(
-//                            GetPresignedObjectUrlArgs.builder()
-//                                    .method(Method.GET)
-//                                    .bucket("fanaticups-bucket-1-AAA")
-//                                    .object("Bilma.jpg")
-//                                    .expiry(2, TimeUnit.HOURS)
-//                                    .build());
-//            System.out.println("URL DE LA IMAGEN?¿?¿: " + url);
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
-    public Optional<CupDTO> findCupById(Long id){
+    public Optional<CupDTO> findCupById(Long id) {
         Optional<CupEntity> optionalCupEntity = this.cupRepository.findById(id);
-        if(optionalCupEntity.isPresent()){
+        if (optionalCupEntity.isPresent()) {
             CupEntity cupEntity = optionalCupEntity.get();
-            String imagePath = this.imageMinioUrl  + cupEntity.getUser().getId() + "/" + cupEntity.getName() + "/";
+            String imagePath = this.imageMinioUrl + cupEntity.getUser().getId() + "/" + cupEntity.getName() + "/";
             cupEntity.setImage(imagePath + cupEntity.getImage());
             return Optional.of(this.modelMapper.map(cupEntity, CupDTO.class));
         }
         return Optional.empty();
     }
 
-    public Optional<CupDTO> add(RequestBodyCreateCup requestBodyCreateCup) throws JsonProcessingException {
+    public Optional<CupDTO> add(RequestBodyCreateCup requestBodyCreateCup) {
         Optional<UserEntity> userEntity = this.userRepository.findById(Math.toIntExact(Long.parseLong(requestBodyCreateCup.getUserId())));
-        CupDTO cupDTO = this.objectMapper.readValue(requestBodyCreateCup.getCup(), CupDTO.class);
+        CupDTO cupDTO = null;
+        try {
+            cupDTO = this.objectMapper.readValue(requestBodyCreateCup.getCup(), CupDTO.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         cupDTO.setUser(userEntity.get());
         CupEntity cupEntity = this.cupRepository.save(this.modelMapper.map(cupDTO, CupEntity.class));
         cupDTO = this.modelMapper.map(cupEntity, CupDTO.class);

@@ -31,21 +31,6 @@ public class CupController {
     @Autowired
     private FileService fileService;
 
-//    @Operation(summary = "Get all cups")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200",
-//                    description = "Found cups",
-//                    content = {
-//                            @Content(mediaType = "application/json",
-//                                    schema = @Schema(implementation = CupDTO.class))}
-//            )})
-//    @CrossOrigin(origins = "http://localhost:4200")
-//    @GetMapping(value = "/cups")
-//    public ResponseEntity<List<CupDTO>> findAllCups() {
-//        List<CupDTO> cupsDTOList = this.cupService.findAllCups();
-//        return cupsDTOList.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(cupsDTOList);
-//    }
-
     @Operation(summary = "Get all cups pageable")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
@@ -69,6 +54,7 @@ public class CupController {
         return optionalCupDTO.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping(value = "/cups/existCupNameByUserId")
     public ResponseEntity<Boolean> existCupByUserIdAndCupName(
             @RequestParam("userId") String userId,
@@ -78,7 +64,7 @@ public class CupController {
 
     @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping(value = "/cups")
-    public ResponseEntity<CupDTO> create(@RequestBody RequestBodyCreateCup requestBodyCreateCup) throws JsonProcessingException {
+    public ResponseEntity<CupDTO> create(@RequestBody RequestBodyCreateCup requestBodyCreateCup) {
         Optional<CupDTO> optionalCupDTO = this.cupService.add(requestBodyCreateCup);
         return optionalCupDTO.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.badRequest().build());
     }
