@@ -27,8 +27,8 @@ public class MinioService {
     private final String bucketName = "images";
 
     public MinioService(@Value("${apiBaseUrlMinio}") String apiMinioUrl) {
-        //this.apiMinioUrl = apiMinioUrl;
-        this.apiMinioUrl = "172.17.0.5:9000";
+        this.apiMinioUrl = apiMinioUrl;
+        //this.apiMinioUrl = "172.17.0.5:9000";
         try {
             this.minioClient = MinioClient.builder()
                     .endpoint(this.apiMinioUrl)
