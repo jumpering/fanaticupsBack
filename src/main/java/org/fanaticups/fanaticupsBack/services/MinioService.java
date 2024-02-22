@@ -23,7 +23,7 @@ public class MinioService {
     private final String accesKeyId = "DjjGWp1QpWL87Q9Z7fJT";
     private final String secretAccessKey = "BaoeKiv67fBHJmwJan5se7NXcLyImYeAUeMRNKWY";
     private final String apiMinioUrl;
-    private final String baseImagePath = "fanaticups/";
+    private final String baseImagePath = "/fanaticups/";
     private final String bucketName = "images";
 
     public MinioService(@Value("${apiBaseUrlMinio}") String apiMinioUrl) {
