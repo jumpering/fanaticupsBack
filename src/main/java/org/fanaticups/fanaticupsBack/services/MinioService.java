@@ -19,21 +19,18 @@ import java.security.NoSuchAlgorithmException;
 public class MinioService {
 
     private MinioClient minioClient;
-    //private final String accesKeyId = "Bearer DjjGWp1QpWL87Q9Z7fJT";
     private final String accesKeyId = "DjjGWp1QpWL87Q9Z7fJT";
     private final String secretAccessKey = "BaoeKiv67fBHJmwJan5se7NXcLyImYeAUeMRNKWY";
-    private final String apiMinioUrl = "http://172.17.0.5:9000"; //ESTE FUNCIONA!!!!!!!!!
-    //private final String apiMinioUrl = "//images";
+    //private final String apiMinioUrl = "http://172.17.0.5:9000"; //ESTE FUNCIONA!!!!!!!!!
+    private final String apiBaseUrlMinio;
     private final String baseImagePath = "/fanaticups/";
     private final String bucketName = "images";
 
-    //public MinioService(@Value("${apiBaseUrlMinio}") String apiMinioUrl) {
-    public MinioService() {
-        //this.apiMinioUrl = apiMinioUrl;
-        //this.apiMinioUrl = "172.17.0.5:9000";
+    public MinioService(@Value("${apiBaseUrlMinio}") String apiBaseUrlMinio) {
+        this.apiBaseUrlMinio = apiBaseUrlMinio;
         try {
             this.minioClient = MinioClient.builder()
-                    .endpoint(this.apiMinioUrl)
+                    .endpoint(this.apiBaseUrlMinio)
                     .credentials(this.accesKeyId, this.secretAccessKey)
                     .build();
             System.out.println("minio registrado!!! " + this.minioClient);
