@@ -23,7 +23,7 @@ public class MinioService {
     private final String accesKeyId = "DjjGWp1QpWL87Q9Z7fJT";
     private final String secretAccessKey = "BaoeKiv67fBHJmwJan5se7NXcLyImYeAUeMRNKWY";
     //private final String apiMinioUrl = "http://172.17.0.5:9000"; //ESTE FUNCIONA!!!!!!!!!
-    private final String apiMinioUrl = "http://images";
+    private final String apiMinioUrl = "//images";
     private final String baseImagePath = "/fanaticups/";
     private final String bucketName = "images";
 
