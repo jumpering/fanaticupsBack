@@ -22,13 +22,14 @@ public class MinioService {
     //private final String accesKeyId = "Bearer DjjGWp1QpWL87Q9Z7fJT";
     private final String accesKeyId = "DjjGWp1QpWL87Q9Z7fJT";
     private final String secretAccessKey = "BaoeKiv67fBHJmwJan5se7NXcLyImYeAUeMRNKWY";
-    private final String apiMinioUrl;
+    private final String apiMinioUrl = "172.17.0.5:9000";
     private final String baseImagePath = "/fanaticups/";
     private final String bucketName = "images";
 
-    public MinioService(@Value("${apiBaseUrlMinio}") String apiMinioUrl) {
+    //public MinioService(@Value("${apiBaseUrlMinio}") String apiMinioUrl) {
+    public MinioService() {
         //this.apiMinioUrl = apiMinioUrl;
-        this.apiMinioUrl = "172.17.0.5:9000";
+        //this.apiMinioUrl = "172.17.0.5:9000";
         try {
             this.minioClient = MinioClient.builder()
                     .endpoint(this.apiMinioUrl)
