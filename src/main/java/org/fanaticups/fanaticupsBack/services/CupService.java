@@ -51,20 +51,30 @@ public class CupService {
 
     public Page<CupDTO> findAllCups(Pageable pageable) {
         Page<CupEntity> pageCupEntity = this.cupRepository.findAll(pageable);
-        pageCupEntity.forEach(element -> {
-            String imagePath = this.imageMinioUrl + element.getUser().getId() + "/" + element.getName() + "/";
-            element.setImage(imagePath + element.getImage());
-        });
-        return pageCupEntity.map(element -> this.modelMapper.map(element, CupDTO.class));
+        Page<CupDTO> pageCupDTO = pageCupEntity.map(element -> this.modelMapper.map(element, CupDTO.class));
+        pageCupDTO.forEach(this::setImageUrl);
+        return pageCupDTO;
+    }
+
+    public CupDTO setImageUrl(CupDTO cupDTO){
+        String imagePath = this.imageMinioUrl + cupDTO.getUser().getId() + "/" + cupDTO.getName() + "/";
+        cupDTO.setImage(imagePath + cupDTO.getImage());
+        return cupDTO;
     }
 
     public Optional<CupDTO> findCupById(Long id) {
         Optional<CupEntity> optionalCupEntity = this.cupRepository.findById(id);
         if (optionalCupEntity.isPresent()) {
             CupEntity cupEntity = optionalCupEntity.get();
-            String imagePath = this.imageMinioUrl + cupEntity.getUser().getId() + "/" + cupEntity.getName() + "/";
-            cupEntity.setImage(imagePath + cupEntity.getImage());
             return Optional.of(this.modelMapper.map(cupEntity, CupDTO.class));
+        }
+        return Optional.empty();
+    }
+
+    public Optional<CupDTO> findCupByIdWithImageUrl(Long id) {
+        Optional<CupDTO> optionalCupDTO = this.findCupById(id);
+        if (optionalCupDTO.isPresent()) {
+            return Optional.of(this.setImageUrl(optionalCupDTO.get()));
         }
         return Optional.empty();
     }

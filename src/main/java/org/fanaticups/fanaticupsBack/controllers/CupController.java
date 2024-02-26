@@ -7,6 +7,7 @@ import org.fanaticups.fanaticupsBack.models.CupDTO;
 import org.fanaticups.fanaticupsBack.models.RequestBodyCreateCup;
 import org.fanaticups.fanaticupsBack.services.CupService;
 import org.fanaticups.fanaticupsBack.services.FileService;
+import org.fanaticups.fanaticupsBack.services.MinioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +32,9 @@ public class CupController {
     @Autowired
     private FileService fileService;
 
+    @Autowired
+    private MinioService minioService;
+
     @Operation(summary = "Get all cups pageable")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
@@ -50,7 +54,7 @@ public class CupController {
     @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping(value = "/cups/{id}")
     public ResponseEntity<CupDTO> findById(@PathVariable Long id) {
-        Optional<CupDTO> optionalCupDTO = this.cupService.findCupById(id);
+        Optional<CupDTO> optionalCupDTO = this.cupService.findCupByIdWithImageUrl(id);
         return optionalCupDTO.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -69,14 +73,18 @@ public class CupController {
         return optionalCupDTO.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.badRequest().build());
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @DeleteMapping(value = "/cups/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         Optional<CupDTO> optionalCupDTO = this.cupService.findCupById(id);
         if (optionalCupDTO.isPresent()){
             CupDTO cupDTO = optionalCupDTO.get();
-            String path = cupDTO.getUser().getId() + "/" + cupDTO.getName() + "/";
-            if (this.fileService.deletePathAndFile(path)) {
+            String path = cupDTO.getUser().getId() + "/" + cupDTO.getName() + "/" + cupDTO.getImage();
+//            if (this.fileService.deletePathAndFile(path)) {
+//                this.cupService.delete(id);
+            if (this.minioService.deletePathAndFile(path)) {
                 this.cupService.delete(id);
+
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT); //204 response
             }
         }
