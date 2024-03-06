@@ -2,11 +2,9 @@ package org.fanaticups.fanaticupsBack.controllers;
 
 import java.util.Optional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.fanaticups.fanaticupsBack.models.CupDTO;
 import org.fanaticups.fanaticupsBack.models.RequestBodyCreateCup;
 import org.fanaticups.fanaticupsBack.services.CupService;
-import org.fanaticups.fanaticupsBack.services.FileService;
 import org.fanaticups.fanaticupsBack.services.MinioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,6 +19,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api")
@@ -28,9 +27,6 @@ public class CupController {
 
     @Autowired
     private CupService cupService;
-
-    @Autowired
-    private FileService fileService;
 
     @Autowired
     private MinioService minioService;
@@ -43,7 +39,7 @@ public class CupController {
                             @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = CupDTO.class))}
             )})
-    @CrossOrigin(origins = "http://localhost:4200") //este ha echo falta para modo developer en localhost
+    @CrossOrigin(origins = "http://localhost:4200")
     //@CrossOrigin
     @GetMapping(value = "/cups")
     public ResponseEntity<Page<CupDTO>> findAll(@PageableDefault(page = 0, size = 12) Pageable pageable) {
@@ -80,8 +76,6 @@ public class CupController {
         if (optionalCupDTO.isPresent()){
             CupDTO cupDTO = optionalCupDTO.get();
             String path = cupDTO.getUser().getId() + "/" + cupDTO.getName() + "/" + cupDTO.getImage();
-//            if (this.fileService.deletePathAndFile(path)) {
-//                this.cupService.delete(id);
             if (this.minioService.deletePathAndFile(path)) {
                 this.cupService.delete(id);
 
@@ -91,8 +85,20 @@ public class CupController {
         return ResponseEntity.badRequest().build();
     }
 
-    @PutMapping(value = "/cups/{id}")
-    public ResponseEntity<CupDTO> update(@PathVariable Long id, @RequestBody String cupDTO) throws JsonProcessingException {
-        return ResponseEntity.ok(this.cupService.update(id, cupDTO).get());
+//    @PutMapping(value = "/cups/{id}")
+//    public ResponseEntity<CupDTO> update(@PathVariable Long id, @RequestBody String cupDTO) throws JsonProcessingException {
+//        return ResponseEntity.ok(this.cupService.update(id, cupDTO).get());
+//    }
+
+    @CrossOrigin(origins = "http://localhost:4200")
+    @PutMapping(value = "/cups")
+    public ResponseEntity<CupDTO> update(@RequestParam("file") Optional<MultipartFile> file, @RequestParam String cup) {
+        System.out.println("VALOR IMAGEN: " + file);
+        if(file.isPresent()){
+            return ResponseEntity.ok(this.cupService.updateV2(cup, file.get()).get());
+        } else {
+            return ResponseEntity.ok(this.cupService.updateV2(cup, null).get());
+        }
+
     }
 }

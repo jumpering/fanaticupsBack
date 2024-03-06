@@ -13,13 +13,13 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileController {
 
     @Autowired
-    private FileService fileService;
-
-    @Autowired
     private MinioService minioService;
 
     @Autowired
     private CupService cupService;
+
+    @Autowired
+    private FileService fileService;
 
     @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/files")
@@ -27,7 +27,6 @@ public class FileController {
                                          @RequestParam("userId") String userId,
                                          @RequestParam("cupName") String cupName) {
         String imagePath = userId + "/" + cupName + "/";
-//        boolean fileSuccessUploaded = this.fileService.uploadFile(imagePath, file);
         boolean fileSuccessUploaded = this.minioService.uploadFile(imagePath, file);
         if (fileSuccessUploaded) {
             return ResponseEntity.ok("File success uploaded");
@@ -51,19 +50,36 @@ public class FileController {
         return ResponseEntity.badRequest().build();
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
-    @PutMapping("/files/updatePath")
-    public ResponseEntity<String> updatePath(@RequestParam("userId") String userId,
-                                             @RequestParam("oldPath") String oldPath,
-                                             @RequestParam("newPath") String newPath) {
-        String oldPathToRename = userId + "/" + oldPath + "/";
-        String newPathToRename = userId + "/" + newPath + "/";
-        boolean fileSuccessUploaded = this.fileService.renamePath(oldPathToRename, newPathToRename);
-        if (fileSuccessUploaded) {
-            return ResponseEntity.ok("File success updated");
-        }
-        return ResponseEntity.badRequest().build();
-    }
+//    @CrossOrigin(origins = "http://localhost:4200")
+//    @PutMapping("/files/updatePath")
+//    public ResponseEntity<String> updatePath(@RequestParam("userId") String userId,
+//                                             @RequestParam("oldPath") String oldPath,
+//                                             @RequestParam("newPath") String newPath) {
+//        String oldPathToRename = userId + "/" + oldPath + "/";
+//        String newPathToRename = userId + "/" + newPath + "/";
+////        boolean fileSuccessUploaded = this.fileService.renamePath(oldPathToRename, newPathToRename);
+//        boolean fileSuccessUploaded = this.minioService.renamePath(oldPathToRename, newPathToRename);
+//        if (fileSuccessUploaded) {
+//            return ResponseEntity.ok("File success updated");
+//        }
+//        return ResponseEntity.badRequest().build();
+//    }
+
+
+//    @CrossOrigin(origins = "http://localhost:4200")
+//    @PutMapping("/files/updatePath")
+//    public ResponseEntity<String> updatePath(@RequestParam("file") MultipartFile file,
+//                                             @RequestParam("userId") String userId,
+//                                             @RequestParam("cupName") String cupName) {
+//        String imagePath = userId + "/" + cupName + "/";
+//        boolean fileAndPathSuccessDelete = this.minioService.deletePathAndFile(imagePath);
+//        boolean fileSuccessUploaded = this.minioService.updateFile(imagePath, file);
+//        if (fileAndPathSuccessDelete && fileSuccessUploaded) {
+//            return ResponseEntity.ok("File success uploaded");
+//        }
+//        return ResponseEntity.badRequest().build();
+//    }
+
 }
 
 

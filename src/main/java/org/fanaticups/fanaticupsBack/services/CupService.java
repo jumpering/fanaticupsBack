@@ -3,37 +3,30 @@ package org.fanaticups.fanaticupsBack.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.minio.BucketExistsArgs;
-import io.minio.GetObjectArgs;
-import io.minio.GetPresignedObjectUrlArgs;
-import io.minio.MinioClient;
-import io.minio.errors.*;
-import io.minio.http.Method;
-import io.minio.messages.Bucket;
 import org.fanaticups.fanaticupsBack.models.RequestBodyCreateCup;
 import org.fanaticups.fanaticupsBack.security.dao.UserEntity;
 import org.fanaticups.fanaticupsBack.security.dao.UserRepository;
 
+import org.fanaticups.fanaticupsBack.utils.FileComparator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 import org.fanaticups.fanaticupsBack.dao.entities.CupEntity;
 import org.fanaticups.fanaticupsBack.dao.repositories.CupRepository;
 import org.fanaticups.fanaticupsBack.models.CupDTO;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class CupService {
@@ -49,6 +42,9 @@ public class CupService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private MinioService minioService;
+
     public Page<CupDTO> findAllCups(Pageable pageable) {
         Page<CupEntity> pageCupEntity = this.cupRepository.findAll(pageable);
         Page<CupDTO> pageCupDTO = pageCupEntity.map(element -> this.modelMapper.map(element, CupDTO.class));
@@ -56,7 +52,7 @@ public class CupService {
         return pageCupDTO;
     }
 
-    public CupDTO setImageUrl(CupDTO cupDTO){
+    public CupDTO setImageUrl(CupDTO cupDTO) {
         String imagePath = this.imageMinioUrl + cupDTO.getUser().getId() + "/" + cupDTO.getName() + "/";
         cupDTO.setImage(imagePath + cupDTO.getImage());
         return cupDTO;
@@ -101,22 +97,165 @@ public class CupService {
         this.cupRepository.deleteById(id);
     }
 
-//    public Optional<CupDTO> updateCupById(RequestBodyUpdateCup requestBodyUpdateCup) throws JsonProcessingException {
-//        CupDTO cupDTO = this.objectMapper.readValue(requestBodyUpdateCup.getCupId(), CupDTO.class);
-//        CupEntity cupEntity = this.modelMapper.map(cupDTO, CupEntity.class);
-//        this.cupRepository.update(cupEntity);
-//        return Optional.empty();
-//    }
+    public Optional<CupDTO> updateV2(String cup, MultipartFile image) {
+        CupDTO mappedCupDTO = null;
+        try {
+            mappedCupDTO = this.objectMapper.readValue(cup, CupDTO.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        Long id = mappedCupDTO.getId();
+        Long userId = mappedCupDTO.getUser().getId();
+        String cupName = mappedCupDTO.getName();
+        String cupImage = mappedCupDTO.getImage();
+        //CupDTO previusCupDTO = this.findCupById(id).get();
+        CupEntity previusCupEntity = this.cupRepository.findById(id).get();
+        CupEntity updatedCupEntity;
+        if (image != null) {
+            if (cupName.equals(previusCupEntity.getName())) {
+                InputStream previusImage = this.minioService.downloadFile(userId + "/" + cupName + "/" + cupImage);
+                try {
+                    File previusImageFile = File.createTempFile("temp-", null);
+                    Files.copy(previusImage, previusImageFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    InputStream incomingImage = image.getInputStream();
+                    File incomingImageFile = File.createTempFile("temp2-", null);
+                    Files.copy(incomingImage, incomingImageFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
-    public Optional<CupDTO> update(Long id, String cupDTO) throws JsonProcessingException {
-        CupEntity currentCupEntity = this.cupRepository.findById(id).get();
-        CupDTO mappedCupDTO = this.objectMapper.readValue(cupDTO, CupDTO.class);
-        currentCupEntity.setName(mappedCupDTO.getName());
-        currentCupEntity.setOrigin(mappedCupDTO.getOrigin());
-        currentCupEntity.setDescription(mappedCupDTO.getDescription());
-        currentCupEntity.setPrice(mappedCupDTO.getPrice());
-        currentCupEntity.setImage(mappedCupDTO.getImage());
-        CupEntity updatedEntity = this.cupRepository.save(currentCupEntity);
-        return Optional.of(this.modelMapper.map(updatedEntity, CupDTO.class));
+                    if (FileComparator.compareImages(previusImageFile, incomingImageFile)) {
+                        System.out.println("IMAGENES SON IDENTICAS Y NOMBRE DE LA CUP TAMBIEN ! ");
+                        //pues solo actualizo la cup y la imagen no la toco
+                        //¿puedo usar model mapper?
+                        previusCupEntity.setName(mappedCupDTO.getName());
+                        previusCupEntity.setOrigin(mappedCupDTO.getOrigin());
+                        previusCupEntity.setDescription(mappedCupDTO.getDescription());
+                        previusCupEntity.setPrice(mappedCupDTO.getPrice());
+                        updatedCupEntity = this.cupRepository.save(previusCupEntity);//ojo con los campos vacios de imagen
+                        return Optional.of(this.modelMapper.map(updatedCupEntity, CupDTO.class));
+
+                    } else {
+                        System.out.println("IMAGENES SON DIFERENTES PERO LA CUP SE LLAMA IGUAL: ");
+                        //pues subo la imagen nuevo (borro primero la antigua)
+                        //y actualizo la cup
+                        boolean createdNewImage = false;
+                        boolean deletedOldImage = this.minioService.deletePathAndFile(userId + "/" + cupName + "/" + cupImage);
+                        if (deletedOldImage) {
+                            System.out.println("imagen antigua borrada");
+                            createdNewImage = this.minioService.uploadFile(userId + "/" + cupName + "/", image);
+                        }
+                        if (createdNewImage) {
+                            System.out.println("imagen nueva creada");
+                            previusCupEntity.setName(mappedCupDTO.getName());
+                            previusCupEntity.setOrigin(mappedCupDTO.getOrigin());
+                            previusCupEntity.setDescription(mappedCupDTO.getDescription());
+                            previusCupEntity.setPrice(mappedCupDTO.getPrice());
+                            previusCupEntity.setImage(image.getOriginalFilename());
+                            updatedCupEntity = this.cupRepository.save(previusCupEntity);//ojo con los campos vacios de imagen
+                            return Optional.of(this.modelMapper.map(updatedCupEntity, CupDTO.class));
+                        }
+
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                InputStream previusImage = this.minioService.downloadFile(userId + "/" + previusCupEntity.getName() + "/" + cupImage);
+                File previusImageFile = null;
+                try {
+                    previusImageFile = File.createTempFile("temp-", null);
+                    Files.copy(previusImage, previusImageFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    InputStream incomingImage = image.getInputStream();
+                    File incomingImageFile = File.createTempFile("temp2-", null);
+                    Files.copy(incomingImage, incomingImageFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    if (FileComparator.compareImages(previusImageFile, incomingImageFile)) {
+                        System.out.println("IMAGENES IGUALES y NOMBRES DIFERENTES");
+                        //crear nuevo directorio
+                        //mover a nuevo
+                        //borrar antiguo directorio e imagen
+                        //actualizo cup
+                        boolean createdDirectory = this.minioService.createDirectory(userId + "/" + cupName + "/");
+                        if (createdDirectory) {
+                            System.out.println("nuevo directorio creado");
+                            boolean movedImage = this.minioService.moveFile(userId + "/" + previusCupEntity.getName() + "/" + cupImage, userId + "/" + cupName + "/" + cupImage);
+                            if (movedImage) {
+                                System.out.println("imagen movida entre directorios");
+                                boolean deletedOldFile = this.minioService.deletePathAndFile(userId + "/" + previusCupEntity.getName() + "/" + cupImage);
+                                if (deletedOldFile) {
+                                    System.out.println("ruta antigua borrada");
+                                    previusCupEntity.setName(mappedCupDTO.getName());
+                                    previusCupEntity.setOrigin(mappedCupDTO.getOrigin());
+                                    previusCupEntity.setDescription(mappedCupDTO.getDescription());
+                                    previusCupEntity.setPrice(mappedCupDTO.getPrice());
+                                    previusCupEntity.setImage(mappedCupDTO.getImage());
+                                    updatedCupEntity = this.cupRepository.save(previusCupEntity);//ojo con los campos vacios de imagen
+                                    return Optional.of(this.modelMapper.map(updatedCupEntity, CupDTO.class));
+                                }
+                            }
+                        }
+                    } else {
+                        System.out.println("IMAGENES DIFERENTES y NOMBRES DIFERENTES");
+                        //borro antigua imagen y path
+                        //creo nueva imagen y path
+                        //actualizo cup
+                        boolean deletedOldFile = this.minioService.deletePathAndFile(userId + "/" + previusCupEntity.getName() + "/" + previusCupEntity.getImage());
+                        if (deletedOldFile) {
+                            System.out.println("se ha borrado la antigua ruta e imagen");
+                            boolean createdNewFile = this.minioService.uploadFile(userId + "/" + cupName + "/", image);
+                            if (createdNewFile) {
+                                System.out.println("se ha creado la nueva ruta e imagen");
+                                previusCupEntity.setName(mappedCupDTO.getName());
+                                previusCupEntity.setOrigin(mappedCupDTO.getOrigin());
+                                previusCupEntity.setDescription(mappedCupDTO.getDescription());
+                                previusCupEntity.setPrice(mappedCupDTO.getPrice());
+                                previusCupEntity.setImage(image.getOriginalFilename());
+                                updatedCupEntity = this.cupRepository.save(previusCupEntity);//ojo con los campos vacios de imagen
+                                return Optional.of(this.modelMapper.map(updatedCupEntity, CupDTO.class));
+                            }
+                        }
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+            }
+        } else {
+            System.out.println("NO EXISTE IMAGE CUP");
+                if (cupName.equals(previusCupEntity.getName())) {
+                    System.out.println("NO HAY IMAGEN y NOMBRES IGUALES");
+                    //actualizo cup, misma imagen
+                    previusCupEntity.setName(mappedCupDTO.getName());
+                    previusCupEntity.setOrigin(mappedCupDTO.getOrigin());
+                    previusCupEntity.setDescription(mappedCupDTO.getDescription());
+                    previusCupEntity.setPrice(mappedCupDTO.getPrice());
+                    updatedCupEntity = this.cupRepository.save(previusCupEntity);//ojo con los campos vacios de imagen
+                    return Optional.of(this.modelMapper.map(updatedCupEntity, CupDTO.class));
+
+                } else{
+                    System.out.println("NO HAY IMAGEN y NOMBRES DIFERENTES");
+                    //creo nuevo directorio
+                    //copio imagen a nuevo directorio
+                    //borro antiguo directorio
+                    //actualizo cup
+                    boolean createdDirectory = this.minioService.createDirectory(userId + "/" + cupName + "/");
+                    if (createdDirectory) {
+                        System.out.println("nuevo directorio creado");
+                        boolean movedImage = this.minioService.moveFile(userId + "/" + previusCupEntity.getName() + "/" + cupImage, userId + "/" + cupName + "/" + cupImage);
+                        if (movedImage) {
+                            System.out.println("imagen movida entre directorios");
+                            boolean deletedOldFile = this.minioService.deletePathAndFile(userId + "/" + previusCupEntity.getName() + "/" + cupImage);
+                            if (deletedOldFile) {
+                                System.out.println("ruta antigua borrada");
+                                previusCupEntity.setName(mappedCupDTO.getName());
+                                previusCupEntity.setOrigin(mappedCupDTO.getOrigin());
+                                previusCupEntity.setDescription(mappedCupDTO.getDescription());
+                                previusCupEntity.setPrice(mappedCupDTO.getPrice());
+                                previusCupEntity.setImage(previusCupEntity.getImage());
+                                updatedCupEntity = this.cupRepository.save(previusCupEntity);//ojo con los campos vacios de imagen
+                                return Optional.of(this.modelMapper.map(updatedCupEntity, CupDTO.class));
+                            }
+                        }
+                    }
+                }
+        }
+        return Optional.empty();
     }
 }

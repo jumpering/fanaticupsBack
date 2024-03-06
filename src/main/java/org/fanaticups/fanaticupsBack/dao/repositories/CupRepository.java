@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface CupRepository extends JpaRepository<CupEntity, Long>{
     @Transactional
-    default CupEntity update(CupEntity cupEntity){ //TODO
+    default CupEntity update(CupEntity cupEntity){ //TODO ...use save
         CupEntity actualCup = this.findById(cupEntity.getId()).orElse(null);
         if(actualCup != null){
             actualCup.setName(cupEntity.getName());
