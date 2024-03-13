@@ -1,11 +1,10 @@
 package org.fanaticups.fanaticupsBack.utils;
 
 import java.io.*;
-import java.util.Arrays;
 
 public class FileComparator {
 
-    public static boolean compareImages(File imageFile1, File imageFile2) throws IOException {
+    public static boolean isEqualImages(File imageFile1, File imageFile2) throws IOException {
         if (!imageFile1.exists() || !imageFile2.exists()) {
             throw new FileNotFoundException("Uno o ambos archivos no existen");
         }

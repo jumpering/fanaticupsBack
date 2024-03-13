@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.fanaticups.fanaticupsBack.models.CupDTO;
 import org.fanaticups.fanaticupsBack.models.RequestBodyCreateCup;
 import org.fanaticups.fanaticupsBack.services.CupService;
+import org.fanaticups.fanaticupsBack.services.FileService;
 import org.fanaticups.fanaticupsBack.services.MinioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -64,9 +65,21 @@ public class CupController {
 
     @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping(value = "/cups")
-    public ResponseEntity<CupDTO> create(@RequestBody RequestBodyCreateCup requestBodyCreateCup) {
-        Optional<CupDTO> optionalCupDTO = this.cupService.add(requestBodyCreateCup);
-        return optionalCupDTO.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.badRequest().build());
+    public ResponseEntity<CupDTO> create(@RequestParam("file") MultipartFile file,
+                                         @RequestParam("userId") String userId,
+                                         @RequestParam("cup") String cup) {
+        Optional<CupDTO> optionalCupDTO = this.cupService.add(userId, cup);
+        if(optionalCupDTO.isPresent()){
+            CupDTO cupDTO = optionalCupDTO.get();
+            String path = userId + "/" + cupDTO.getId() + "/";
+            boolean fileUploaded = this.minioService.uploadFile(path, file);
+            if(fileUploaded){
+                return ResponseEntity.ok(cupDTO);
+            } else {
+                System.out.println("Error uploading file");
+            }
+        }
+        return ResponseEntity.badRequest().build();
     }
 
     @CrossOrigin(origins = "http://localhost:4200")
@@ -75,7 +88,7 @@ public class CupController {
         Optional<CupDTO> optionalCupDTO = this.cupService.findCupById(id);
         if (optionalCupDTO.isPresent()){
             CupDTO cupDTO = optionalCupDTO.get();
-            String path = cupDTO.getUser().getId() + "/" + cupDTO.getName() + "/" + cupDTO.getImage();
+            String path = cupDTO.getUser().getId() + "/" + cupDTO.getId() + "/" + cupDTO.getImage();
             if (this.minioService.deletePathAndFile(path)) {
                 this.cupService.delete(id);
 
@@ -85,19 +98,13 @@ public class CupController {
         return ResponseEntity.badRequest().build();
     }
 
-//    @PutMapping(value = "/cups/{id}")
-//    public ResponseEntity<CupDTO> update(@PathVariable Long id, @RequestBody String cupDTO) throws JsonProcessingException {
-//        return ResponseEntity.ok(this.cupService.update(id, cupDTO).get());
-//    }
-
     @CrossOrigin(origins = "http://localhost:4200")
     @PutMapping(value = "/cups")
     public ResponseEntity<CupDTO> update(@RequestParam("file") Optional<MultipartFile> file, @RequestParam String cup) {
-        System.out.println("VALOR IMAGEN: " + file);
         if(file.isPresent()){
-            return ResponseEntity.ok(this.cupService.updateV2(cup, file.get()).get());
+            return ResponseEntity.ok(this.cupService.update(cup, file.get()).get());
         } else {
-            return ResponseEntity.ok(this.cupService.updateV2(cup, null).get());
+            return ResponseEntity.ok(this.cupService.update(cup, null).get());
         }
 
     }
