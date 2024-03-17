@@ -3,9 +3,7 @@ package org.fanaticups.fanaticupsBack.controllers;
 import java.util.Optional;
 
 import org.fanaticups.fanaticupsBack.models.CupDTO;
-import org.fanaticups.fanaticupsBack.models.RequestBodyCreateCup;
 import org.fanaticups.fanaticupsBack.services.CupService;
-import org.fanaticups.fanaticupsBack.services.FileService;
 import org.fanaticups.fanaticupsBack.services.MinioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -45,6 +43,22 @@ public class CupController {
     @GetMapping(value = "/cups")
     public ResponseEntity<Page<CupDTO>> findAll(@PageableDefault(page = 0, size = 12) Pageable pageable) {
         Page<CupDTO> cupsDTOList = this.cupService.findAllCups(pageable);
+        return cupsDTOList.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(cupsDTOList);
+    }
+
+    @Operation(summary = "Get all cups pageable with name search String")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Found cups",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = CupDTO.class))}
+            )})
+    @CrossOrigin(origins = "http://localhost:4200")
+    //@CrossOrigin
+    @GetMapping(value = "/cups/search/{searchName}")
+    public ResponseEntity<Page<CupDTO>> findAllWithSearchStringName(@PathVariable String searchName, @PageableDefault(page = 0, size = 12) Pageable pageable) {
+        Page<CupDTO> cupsDTOList = this.cupService.findAllCupsWithSearchName(pageable, searchName);
         return cupsDTOList.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(cupsDTOList);
     }
 

@@ -51,6 +51,13 @@ public class CupService {
         return pageCupDTO;
     }
 
+    public Page<CupDTO> findAllCupsWithSearchName(Pageable pageable, String searchName) {
+        Page<CupEntity> pageCupEntity = this.cupRepository.findAllByNameContaining(pageable, searchName);
+        Page<CupDTO> pageCupDTO = pageCupEntity.map(element -> this.modelMapper.map(element, CupDTO.class));
+        pageCupDTO.forEach(this::setImageUrl);
+        return pageCupDTO;
+    }
+
     public CupDTO setImageUrl(CupDTO cupDTO) {
         String imagePath = this.imageMinioUrl + cupDTO.getUser().getId() + "/" + cupDTO.getId() + "/";
         cupDTO.setImage(imagePath + cupDTO.getImage());

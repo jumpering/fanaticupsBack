@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.fanaticups.fanaticupsBack.dao.entities.CupEntity;
 import org.fanaticups.fanaticupsBack.dao.repositories.CupRepository;
 import org.fanaticups.fanaticupsBack.models.CupDTO;
-import org.fanaticups.fanaticupsBack.models.RequestBodyCreateCup;
 import org.fanaticups.fanaticupsBack.security.dao.UserEntity;
 import org.fanaticups.fanaticupsBack.security.dao.UserRepository;
 import org.junit.jupiter.api.*;
@@ -14,11 +13,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -50,7 +46,8 @@ class CupServiceTest {
                 .name("Cup1")
                 .Description("Description")
                 .image("image.jpg")
-                .user(this.userEntity).build();
+                .user(this.userEntity)
+                .build();
         this.cupEntity = CupEntity.builder().id(1L)
                 .name("Cup1")
                 .description("Description")
@@ -65,17 +62,17 @@ class CupServiceTest {
         Mockito.reset(this.cupRepository);
     }
     
-//    @DisplayName("FindCupById existing id return cupDTO with image path")
-//    @Test
-//    public void givenRequestExistOneCupWhenFindByIdThenReturnOptionalCup(){
-//        Mockito.when(this.cupRepository.findById(1L)).thenReturn(Optional.ofNullable(this.cupEntity));
-//        this.cupDTO.setImage(this.imagePath + "image.jpg");
-//        CupDTO cupDTOExpected = this.cupDTO;
-//        System.out.println("TRAZA " + this.cupService.findCupByIdWithImageUrl(1L).get().getImage());
-//        Assertions.assertEquals(Optional.of(cupDTOExpected), this.cupService.findCupByIdWithImageUrl(1L));
-//    }
+    @DisplayName("FindCupById existing id return cupDTO with image path")
+    @Test
+    public void givenRequestExistOneCupWhenFindByIdThenReturnOptionalCup(){
+        Mockito.when(this.cupRepository.findById(1L)).thenReturn(Optional.ofNullable(this.cupEntity));
+        ReflectionTestUtils.setField(this.cupService,"imageMinioUrl","");
+        this.cupDTO.setImage(this.imagePath + "image.jpg");
+        CupDTO cupDTOExpected = this.cupDTO;
+        Assertions.assertEquals(Optional.of(cupDTOExpected), this.cupService.findCupByIdWithImageUrl(1L));
+    }
 
-    @DisplayName("FindCupById existing id return empty optional")
+    @DisplayName("FindCupById no existing id return empty optional")
     @Test
     public void givenRequestNoExistOneCupWhenFindByIdThenReturnOptionalEmpty(){
         Mockito.when(this.cupRepository.findById(2L)).thenReturn(Optional.empty());

@@ -65,24 +65,24 @@ public class MinioService {
         }
     }
 
-    public boolean moveFile(String pathOrigin, String pathDestination) { //full path with image needed
-        try {
-            minioClient.copyObject(
-                    CopyObjectArgs.builder()
-                            .bucket(this.bucketName)
-                            .object(this.baseImagePath + pathDestination)
-                            .source(
-                                    CopySource.builder()
-                                            .bucket(this.bucketName)
-                                            .object(this.baseImagePath + pathOrigin)
-                                            .build())
-                            .build());
-            return true;
-        } catch (Exception e) {
-            System.out.println("Error moving file between directories: " + e);
-            return false;
-        }
-    }
+//    public boolean moveFile(String pathOrigin, String pathDestination) { //full path with image needed
+//        try {
+//            minioClient.copyObject(
+//                    CopyObjectArgs.builder()
+//                            .bucket(this.bucketName)
+//                            .object(this.baseImagePath + pathDestination)
+//                            .source(
+//                                    CopySource.builder()
+//                                            .bucket(this.bucketName)
+//                                            .object(this.baseImagePath + pathOrigin)
+//                                            .build())
+//                            .build());
+//            return true;
+//        } catch (Exception e) {
+//            System.out.println("Error moving file between directories: " + e);
+//            return false;
+//        }
+//    }
 
     public InputStream downloadFile(String path){
         InputStream stream;
@@ -98,19 +98,19 @@ public class MinioService {
         return stream;
     }
 
-    public boolean createDirectory(String path){
-        try {
-            this.minioClient.putObject(
-                    PutObjectArgs.builder()
-                            .bucket(this.bucketName)
-                            .object(this.baseImagePath + path)
-                            .stream(
-                                    new ByteArrayInputStream(new byte[] {}), 0, -1)
-                            .build());
-            return true;
-        } catch (Exception e) {
-            System.out.println("Error creating directory in MinioS3: " + e);
-            return false;
-        }
-    }
+//    public boolean createDirectory(String path){
+//        try {
+//            this.minioClient.putObject(
+//                    PutObjectArgs.builder()
+//                            .bucket(this.bucketName)
+//                            .object(this.baseImagePath + path)
+//                            .stream(
+//                                    new ByteArrayInputStream(new byte[] {}), 0, -1)
+//                            .build());
+//            return true;
+//        } catch (Exception e) {
+//            System.out.println("Error creating directory in MinioS3: " + e);
+//            return false;
+//        }
+//    }
 }

@@ -29,6 +29,8 @@ public interface CupRepository extends JpaRepository<CupEntity, Long>{
 
     public Page<CupEntity> findAll(Pageable pageable);
 
+    public Page<CupEntity> findAllByNameContaining(Pageable pageable, String searchName);
+
     public Optional<CupEntity> findById(Long id);
 
     public void deleteById(Long id);
