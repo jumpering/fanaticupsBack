@@ -91,7 +91,7 @@ public class CupController {
             CupDTO cupDTO = optionalCupDTO.get();
             String path = userId + "/" + cupDTO.getId() + "/";
             boolean fileUploaded = this.minioService.uploadFile(path, file);
-            this.chatService.add(cupDTO);
+            this.chatService.createCupChat(cupDTO);
             if(fileUploaded){
                 return ResponseEntity.ok(cupDTO);
             } else {

@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -32,7 +33,16 @@ public class ChatController {
     @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping(value = "/chat/{cupId}")
     public ResponseEntity<List<MessageEntity>> findAllMessagesByCupId(@PathVariable Long cupId) {
-        List<MessageEntity> messageEntityList = this.chatService.findAllMessages(cupId).get();
+        List<MessageEntity> messageEntityList = this.chatService.findAllMessages(cupId);
         return messageEntityList.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(messageEntityList);
+    }
+    @CrossOrigin(origins = "http://localhost:4200")
+    @PostMapping(value = "/chat")
+    public ResponseEntity<MessageEntity> addMessage(@RequestParam("cupId") Long cupId,
+                                              @RequestParam("userId") Long userId,
+                                              @RequestParam("message") String message){
+        Optional<MessageEntity> optionalMessage = this.chatService.createMessage(cupId, userId, message);
+        return optionalMessage.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.badRequest().build());
+
     }
 }
