@@ -36,7 +36,7 @@ public class WebSecurityConfig {
                                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/cups/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/chat/**").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/chat/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/chat/**").authenticated()
                                 .requestMatchers(HttpMethod.POST,"/api/cups/**").authenticated()
                                 .requestMatchers(HttpMethod.PUT,"/api/cups/**").authenticated()
                                 .requestMatchers(HttpMethod.DELETE,"/api/cups/**").authenticated()
