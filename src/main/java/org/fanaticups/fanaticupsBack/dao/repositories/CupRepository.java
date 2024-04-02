@@ -24,7 +24,6 @@ public interface CupRepository extends JpaRepository<CupEntity, Long>{
 //        }
 //        return null;
 //    }
-
     //public List<CupEntity> findAll();
 
     public Page<CupEntity> findAll(Pageable pageable);

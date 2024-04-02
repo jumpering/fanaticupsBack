@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.fanaticups.fanaticupsBack.dao.entities.ChatEntity;
 import org.fanaticups.fanaticupsBack.dao.entities.CupEntity;
 
 import jakarta.persistence.Column;
@@ -16,6 +17,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.fanaticups.fanaticupsBack.dao.entities.MessageEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -49,6 +51,9 @@ public class UserEntity implements UserDetails {
     @OneToMany(mappedBy = "user")
     @JsonIgnore
     private List<CupEntity> cups;
+
+//    @OneToMany(mappedBy = "user")
+//    private List<MessageEntity> messages;
 
     @JsonIgnore
     @Override

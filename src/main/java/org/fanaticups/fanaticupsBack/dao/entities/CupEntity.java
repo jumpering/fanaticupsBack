@@ -42,9 +42,6 @@ public class CupEntity {
     @Column(name = "price")
     private Double price;
 
-//    @Column(name = "owner")
-//    private String owner;
-
     @ManyToOne
     @JsonBackReference //para que no haga recursión
     private UserEntity user;

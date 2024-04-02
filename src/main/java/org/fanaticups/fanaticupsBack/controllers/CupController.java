@@ -3,6 +3,7 @@ package org.fanaticups.fanaticupsBack.controllers;
 import java.util.Optional;
 
 import org.fanaticups.fanaticupsBack.models.CupDTO;
+import org.fanaticups.fanaticupsBack.services.ChatService;
 import org.fanaticups.fanaticupsBack.services.CupService;
 import org.fanaticups.fanaticupsBack.services.MinioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,9 @@ public class CupController {
 
     @Autowired
     private MinioService minioService;
+
+    @Autowired
+    private ChatService chatService;
 
     @Operation(summary = "Get all cups pageable")
     @ApiResponses(value = {
@@ -87,6 +91,7 @@ public class CupController {
             CupDTO cupDTO = optionalCupDTO.get();
             String path = userId + "/" + cupDTO.getId() + "/";
             boolean fileUploaded = this.minioService.uploadFile(path, file);
+            this.chatService.add(cupDTO);
             if(fileUploaded){
                 return ResponseEntity.ok(cupDTO);
             } else {
