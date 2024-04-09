@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.fanaticups.fanaticupsBack.security.dao.UserEntity;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.core.userdetails.User;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Data
 @Builder
@@ -14,7 +16,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Entity
 @Table(name = "messages")
-public class MessageEntity {
+public class MessageEntity implements Comparable<MessageEntity>{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -32,5 +34,11 @@ public class MessageEntity {
     @ManyToOne
     private UserEntity user;
 
-
+    @Override
+    public int compareTo(@NotNull MessageEntity o) {
+        if(Objects.equals(this.id, o.id)){
+            return 0;
+        }
+        return this.id > o.id ? 1 : -1;
+    }
 }

@@ -3,6 +3,7 @@ package org.fanaticups.fanaticupsBack.services;
 import org.fanaticups.fanaticupsBack.dao.entities.MessageEntity;
 import org.fanaticups.fanaticupsBack.dao.repositories.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +16,7 @@ public class MessageService {
     private MessageRepository messageRepository;
 
     public Optional<List<MessageEntity>> findAll(){
-        return Optional.of(this.messageRepository.findAll());
+        Sort sort = Sort.by(Sort.Direction.DESC, "id");
+        return Optional.of(this.messageRepository.findAll(sort));
     }
 }

@@ -9,6 +9,7 @@ import org.fanaticups.fanaticupsBack.services.MinioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,7 +46,7 @@ public class CupController {
     @CrossOrigin(origins = "http://localhost:4200")
     //@CrossOrigin
     @GetMapping(value = "/cups")
-    public ResponseEntity<Page<CupDTO>> findAll(@PageableDefault(page = 0, size = 12) Pageable pageable) {
+    public ResponseEntity<Page<CupDTO>> findAll(@PageableDefault(sort = "id", direction = Sort.Direction.DESC ,page = 0, size = 12) Pageable pageable) {
         Page<CupDTO> cupsDTOList = this.cupService.findAllCups(pageable);
         return cupsDTOList.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(cupsDTOList);
     }
@@ -61,7 +62,7 @@ public class CupController {
     @CrossOrigin(origins = "http://localhost:4200")
     //@CrossOrigin
     @GetMapping(value = "/cups/search/{searchName}")
-    public ResponseEntity<Page<CupDTO>> findAllWithSearchStringName(@PathVariable String searchName, @PageableDefault(page = 0, size = 12) Pageable pageable) {
+    public ResponseEntity<Page<CupDTO>> findAllWithSearchStringName(@PathVariable String searchName, @PageableDefault(sort = "id", direction = Sort.Direction.DESC, page = 0, size = 12) Pageable pageable) {
         Page<CupDTO> cupsDTOList = this.cupService.findAllCupsWithSearchName(pageable, searchName);
         return cupsDTOList.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(cupsDTOList);
     }
@@ -110,7 +111,7 @@ public class CupController {
             String path = cupDTO.getUser().getId() + "/" + cupDTO.getId() + "/" + cupDTO.getImage();
             if (this.minioService.deletePathAndFile(path)) {
                 this.cupService.delete(id);
-
+                //this.chatService.deleteCupChat(cupDTO); //TODO borrar el chat al borrar la taza!
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT); //204 response
             }
         }

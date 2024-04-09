@@ -10,12 +10,11 @@ import org.fanaticups.fanaticupsBack.security.dao.UserEntity;
 import org.fanaticups.fanaticupsBack.security.dao.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class ChatService {
@@ -37,10 +36,12 @@ public class ChatService {
     }
 
     public List<MessageEntity> findAllMessages(Long cupId){
+        //Sort sort = Sort.by(Sort.Direction.DESC, "id");
         Optional<ChatEntity> chatEntity = this.chatRepository.findByCup_Id(cupId);
         List<MessageEntity> resultListOfMessages = new ArrayList<>();
         if(chatEntity.isPresent()){
             resultListOfMessages = chatEntity.get().getMessages();
+            resultListOfMessages.sort(Collections.reverseOrder());
         }
         return resultListOfMessages;
     }
