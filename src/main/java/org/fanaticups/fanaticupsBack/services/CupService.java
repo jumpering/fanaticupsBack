@@ -10,6 +10,7 @@ import org.fanaticups.fanaticupsBack.utils.FileComparator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.Collections;
 import java.util.Optional;
 
 import org.fanaticups.fanaticupsBack.dao.entities.CupEntity;
@@ -148,5 +150,17 @@ public class CupService {
             System.out.println("Error comparing files: " + e);
         }
         return isEquals;
+    }
+
+    public Page<CupDTO> findAllFromUserId(Long userId, Pageable pageable) {
+        //get user
+        Optional<UserEntity> optionalUser = this.userRepository.findById(userId);
+        if(optionalUser.isPresent()){
+            Page<CupEntity> pageCupEntity = this.cupRepository.findAllByUser(optionalUser.get(), pageable);
+            Page<CupDTO> pageCupDTO = pageCupEntity.map(element -> this.modelMapper.map(element, CupDTO.class));
+            pageCupDTO.forEach(this::setImageUrl);
+            return pageCupDTO;
+        }
+        return new PageImpl<>(Collections.emptyList(), pageable, 0);
     }
 }
