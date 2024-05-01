@@ -1,5 +1,6 @@
 package org.fanaticups.fanaticupsBack.services;
 
+import jakarta.transaction.Transactional;
 import org.fanaticups.fanaticupsBack.dao.entities.ChatEntity;
 import org.fanaticups.fanaticupsBack.dao.entities.CupEntity;
 import org.fanaticups.fanaticupsBack.dao.entities.MessageEntity;
@@ -59,5 +60,14 @@ public class ChatService {
             return Optional.of(this.messageRepository.save(messageToSend));
         }
         return Optional.empty();
+    }
+
+    @Transactional
+    public void deleteCupChat(Long cupId) {
+        Optional<ChatEntity> optionalChatEntity =  this.chatRepository.findByCup_Id(cupId);
+        if(optionalChatEntity.isPresent()){
+            this.messageRepository.deleteByChat(optionalChatEntity.get());
+            this.chatRepository.delete(optionalChatEntity.get());
+        }
     }
 }

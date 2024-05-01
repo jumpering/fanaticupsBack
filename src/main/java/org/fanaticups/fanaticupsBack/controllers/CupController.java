@@ -61,9 +61,9 @@ public class CupController {
             )})
     @CrossOrigin(origins = "http://localhost:4200")
     //@CrossOrigin
-    @GetMapping(value = "/cups/search/{searchName}")
-    public ResponseEntity<Page<CupDTO>> findAllWithSearchStringName(@PathVariable String searchName, @PageableDefault(sort = "id", direction = Sort.Direction.DESC, page = 0, size = 12) Pageable pageable) {
-        Page<CupDTO> cupsDTOList = this.cupService.findAllCupsWithSearchName(pageable, searchName);
+    @GetMapping(value = "/cups/search/{searchCupName}")
+    public ResponseEntity<Page<CupDTO>> findAllWithSearchStringName(@PathVariable String searchCupName, @PageableDefault(sort = "id", direction = Sort.Direction.DESC, page = 0, size = 12) Pageable pageable) {
+        Page<CupDTO> cupsDTOList = this.cupService.findAllCupsWithSearchName(pageable, searchCupName);
         return cupsDTOList.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(cupsDTOList);
     }
 
@@ -116,11 +116,11 @@ public class CupController {
         if (optionalCupDTO.isPresent()){
             CupDTO cupDTO = optionalCupDTO.get();
             String path = cupDTO.getUser().getId() + "/" + cupDTO.getId() + "/" + cupDTO.getImage();
-            if (this.minioService.deletePathAndFile(path)) {
-                this.cupService.delete(id);
-                //this.chatService.deleteCupChat(cupDTO); //TODO borrar el chat al borrar la taza!
+            //if (this.minioService.deletePathAndFile(path)) {
+                this.chatService.deleteCupChat(id);
+             //   this.cupService.delete(id);
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT); //204 response
-            }
+            //}
         }
         return ResponseEntity.badRequest().build();
     }

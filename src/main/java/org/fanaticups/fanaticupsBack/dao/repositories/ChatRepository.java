@@ -1,6 +1,7 @@
 package org.fanaticups.fanaticupsBack.dao.repositories;
 
 import org.fanaticups.fanaticupsBack.dao.entities.ChatEntity;
+import org.fanaticups.fanaticupsBack.dao.entities.CupEntity;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -11,6 +12,7 @@ public interface ChatRepository extends JpaRepository<ChatEntity, Long> {
     @Query("select c from ChatEntity c where c.cup.id = ?1")
     Optional<ChatEntity> findByCup_Id(Long id);
 
+    void deleteByCup(CupEntity cup);
 //    @Query("SELECT c FROM ChatEntity c JOIN FETCH c.messages m ORDER BY m.id")
 //    Optional<ChatEntity> findByCup_Id(Long id);
 
