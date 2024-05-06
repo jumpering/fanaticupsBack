@@ -11,11 +11,13 @@ import org.fanaticups.fanaticupsBack.security.dao.UserEntity;
 import org.fanaticups.fanaticupsBack.security.dao.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Optional;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
 
 @Service
 public class ChatService {
@@ -49,7 +51,7 @@ public class ChatService {
 
     public Optional<MessageEntity> createMessage(Long cupId, Long userId, String message){
         Optional<ChatEntity> chat = this.chatRepository.findByCup_Id(cupId);
-        Optional<UserEntity> userEntity = this.userRepository.findById(userId.intValue());
+        Optional<UserEntity> userEntity = this.userRepository.findById(userId);
         if(userEntity.isPresent() && chat.isPresent()){
             MessageEntity messageToSend = MessageEntity.builder()
                     .chat(chat.get())

@@ -116,11 +116,11 @@ public class CupController {
         if (optionalCupDTO.isPresent()){
             CupDTO cupDTO = optionalCupDTO.get();
             String path = cupDTO.getUser().getId() + "/" + cupDTO.getId() + "/" + cupDTO.getImage();
-            //if (this.minioService.deletePathAndFile(path)) {
+            if (this.minioService.deletePathAndFile(path)) {
                 this.chatService.deleteCupChat(id);
-             //   this.cupService.delete(id);
+                this.cupService.delete(id);
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT); //204 response
-            //}
+            }
         }
         return ResponseEntity.badRequest().build();
     }

@@ -81,7 +81,7 @@ class CupServiceTest {
     @DisplayName("Add cup then return the new cup")
     @Test
     public void givenCupWhenAddCupServiceThenReturnCupCreated() throws JsonProcessingException {
-        Mockito.when(this.userRepository.findById(anyInt())).thenReturn(Optional.of(this.userEntity));
+        Mockito.when(this.userRepository.findById(anyLong())).thenReturn(Optional.of(this.userEntity));
         Mockito.when(this.cupRepository.save(this.cupEntity)).thenReturn(this.cupEntity);
         ObjectMapper objectMapper = new ObjectMapper();
         String cupDTOJSON_Jackson = objectMapper.writeValueAsString(this.cupDTO);

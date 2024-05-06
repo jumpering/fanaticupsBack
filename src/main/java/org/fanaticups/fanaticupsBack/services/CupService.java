@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -85,7 +84,7 @@ public class CupService {
     }
 
     public Optional<CupDTO> add(String userId, String cup) {
-        Optional<UserEntity> userEntity = this.userRepository.findById(Math.toIntExact(Long.parseLong(userId)));
+        Optional<UserEntity> userEntity = this.userRepository.findById(Long.parseLong(userId));
         CupDTO cupDTO = null;
         try {
             cupDTO = this.objectMapper.readValue(cup, CupDTO.class);
@@ -142,7 +141,6 @@ public class CupService {
             InputStream incomingImage = image.getInputStream();
             File previusImageFile = File.createTempFile("temp-", null);
             Files.copy(previusImage, previusImageFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            //InputStream incomingImage = image.getInputStream();
             File incomingImageFile = File.createTempFile("temp2-", null);
             Files.copy(incomingImage, incomingImageFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             isEquals = FileComparator.isEqualImages(previusImageFile, incomingImageFile);
