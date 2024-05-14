@@ -7,6 +7,7 @@ import org.fanaticups.fanaticupsBack.security.dao.UserEntity;
 import org.fanaticups.fanaticupsBack.services.CupService;
 import org.fanaticups.fanaticupsBack.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -42,13 +43,14 @@ public class UserController {
 
     @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping(value = "/users/favorites/{userId}")
-    public ResponseEntity<List<CupDTO>> getFavoriteList(@PathVariable("userId") Long userId,
+    public ResponseEntity<Page<CupDTO>> getFavoriteList(@PathVariable("userId") Long userId,
                                                         @PageableDefault(sort = "id",
                                                                 direction = Sort.Direction.DESC,
                                                                 page = 0,
                                                                 size = 12) Pageable pageable) {
-        List<CupDTO> cupDTOList = this.userService.getFavoriteCupList(userId);
-        return ResponseEntity.ok(cupDTOList);
+//        List<CupDTO> cupDTOList = this.userService.getFavoriteCupList(userId);
+        Page<CupDTO> pageCupDTO = this.userService.getFavoriteCupList(userId, pageable);
+        return ResponseEntity.ok(pageCupDTO);
     }
 
 }

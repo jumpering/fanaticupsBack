@@ -6,9 +6,12 @@ import org.fanaticups.fanaticupsBack.security.dao.UserEntity;
 import org.fanaticups.fanaticupsBack.security.dao.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.awt.print.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +23,9 @@ public class UserService {
     private UserRepository userRepository;
 
     private ModelMapper modelMapper  = new ModelMapper();
+
+    @Value("${apiRootImagesMinio}")
+    private String imageMinioUrl;
 
     public void setCupToFavorites(UserEntity userEntity, CupDTO cupDTO) {
         List<CupEntity> listOfCupEntityFavorites = userEntity.getFavoriteCupList();
@@ -33,14 +39,31 @@ public class UserService {
         return this.userRepository.findById(userId);
     }
 
-    public List<CupDTO> getFavoriteCupList(Long userId) {
-        List<CupDTO> cupDTOList = new ArrayList<CupDTO>();
+    public Page<CupDTO> getFavoriteCupList(Long userId, Pageable pageable) {
+        //List<CupDTO> cupDTOList = new ArrayList<CupDTO>();
         Optional<UserEntity> userEntity = this.userRepository.findById(userId);
+        Page<CupDTO> pageCupDTO = null;
         if (userEntity.isPresent()) {
-            cupDTOList = userEntity.get().getFavoriteCupList()
-                    .stream().map(element -> this.modelMapper.map(element, CupDTO.class))
-                    .toList();
+            Page<CupEntity> pageCupEntity = this.userRepository.findFavoriteProductsByUserId(userId, pageable);
+            //modifico imagen url
+            List<CupDTO> cupDTOListWithImageURL = new ArrayList<>();
+            for(CupEntity cupEntity : pageCupEntity.getContent()) {
+                CupDTO cupDTO = this.modelMapper.map(cupEntity, CupDTO.class);
+                this.setImageUrl(cupDTO);
+                cupDTOListWithImageURL.add(cupDTO);
+            }
+            pageCupDTO = new PageImpl<>(cupDTOListWithImageURL, pageable, cupDTOListWithImageURL.size());
+            //pageCupDTO = pageCupEntity.map(element -> this.modelMapper.map(element, CupDTO.class));
+
+//            String imagePath = this.imageMinioUrl + cupDTO.getUser().getId() + "/" + cupDTO.getId() + "/";
+//            cupDTO.setImage(imagePath + cupDTO.getImage());
         }
-        return cupDTOList;
+        return pageCupDTO;
+    }
+
+    public CupDTO setImageUrl(CupDTO cupDTO) {
+        String imagePath = this.imageMinioUrl + cupDTO.getUser().getId() + "/" + cupDTO.getId() + "/";
+        cupDTO.setImage(imagePath + cupDTO.getImage());
+        return cupDTO;
     }
 }
