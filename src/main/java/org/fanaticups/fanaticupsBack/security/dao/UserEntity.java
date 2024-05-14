@@ -4,15 +4,10 @@ import java.util.Collection;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import org.fanaticups.fanaticupsBack.dao.entities.ChatEntity;
 import org.fanaticups.fanaticupsBack.dao.entities.CupEntity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -52,8 +47,13 @@ public class UserEntity implements UserDetails {
     @JsonIgnore
     private List<CupEntity> cups;
 
-//    @OneToMany(mappedBy = "user")
-//    private List<MessageEntity> messages;
+    @ManyToMany()
+    @JoinTable(
+            name = "favorites",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "cup_id")
+    )
+    private List<CupEntity> favoriteCupList;
 
     @JsonIgnore
     @Override

@@ -16,7 +16,7 @@ public class CorsConfig {
       public void addCorsMappings(CorsRegistry registry){
 
         registry.addMapping("/**")
-        .allowedOrigins("http://fanaticups.org, https://fanaticups.org, http://www.fanaticups.org, https://www.fanaticups.org, http://5.250.184.31:4200, http://5.250.184.31, https://fanaticups.onrender.com/files, http://localhost:4200")
+        .allowedOrigins("http://fanaticups.org, https://fanaticups.org, http://www.fanaticups.org, https://www.fanaticups.org, http://5.250.184.31:4200, http://5.250.184.31, http://localhost:4200")
         .allowedMethods("*")
         .exposedHeaders("*");
       }
