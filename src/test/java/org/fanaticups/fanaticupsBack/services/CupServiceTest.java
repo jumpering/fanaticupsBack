@@ -29,6 +29,7 @@ class CupServiceTest {
 
     @InjectMocks
     private CupService cupService;
+
     private CupDTO cupDTO;
     private CupEntity cupEntity;
     private UserEntity userEntity;

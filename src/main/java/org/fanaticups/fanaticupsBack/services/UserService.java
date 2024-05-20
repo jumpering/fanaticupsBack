@@ -22,48 +22,62 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private CupService cupService;
+
     private ModelMapper modelMapper  = new ModelMapper();
 
     @Value("${apiRootImagesMinio}")
     private String imageMinioUrl;
 
-    public void setCupToFavorites(UserEntity userEntity, CupDTO cupDTO) {
+    public boolean setCupToFavorites(UserEntity userEntity, CupDTO cupDTO) {
         List<CupEntity> listOfCupEntityFavorites = userEntity.getFavoriteCupList();
         CupEntity cupEntity = this.modelMapper.map(cupDTO, CupEntity.class);
-        listOfCupEntityFavorites.add(cupEntity);
-        userEntity.setFavoriteCupList(listOfCupEntityFavorites);
-        this.userRepository.save(userEntity);
+        boolean isFavorite = listOfCupEntityFavorites.contains(cupEntity);
+        if(!isFavorite){
+            listOfCupEntityFavorites.add(cupEntity);
+            userEntity.setFavoriteCupList(listOfCupEntityFavorites);
+            this.userRepository.save(userEntity);
+            return true; //cup added to favorite list
+        } else {
+            listOfCupEntityFavorites.remove(cupEntity);
+            userEntity.setFavoriteCupList(listOfCupEntityFavorites);
+            this.userRepository.save(userEntity);
+            return false; //cup removed to favorite list
+        }
+
     }
 
     public Optional<UserEntity> findUserById(Long userId) {
         return this.userRepository.findById(userId);
     }
 
+    public boolean isCupFavorite(Long userId, Long cupId) {
+        Optional<UserEntity> userEntity = this.userRepository.findById(userId);
+        if (userEntity.isPresent()) {
+            List<CupEntity> cupEntityList = userEntity.get().getFavoriteCupList();
+            for (CupEntity cupEntity : cupEntityList) {
+                if (cupId.equals(cupEntity.getId())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public Page<CupDTO> getFavoriteCupList(Long userId, Pageable pageable) {
-        //List<CupDTO> cupDTOList = new ArrayList<CupDTO>();
         Optional<UserEntity> userEntity = this.userRepository.findById(userId);
         Page<CupDTO> pageCupDTO = null;
         if (userEntity.isPresent()) {
-            Page<CupEntity> pageCupEntity = this.userRepository.findFavoriteProductsByUserId(userId, pageable);
-            //modifico imagen url
+            Page<CupEntity> pageCupEntity = this.userRepository.findFavoriteCupsByUserId(userId, pageable);
             List<CupDTO> cupDTOListWithImageURL = new ArrayList<>();
             for(CupEntity cupEntity : pageCupEntity.getContent()) {
                 CupDTO cupDTO = this.modelMapper.map(cupEntity, CupDTO.class);
-                this.setImageUrl(cupDTO);
+                this.cupService.setImageUrl(cupDTO);
                 cupDTOListWithImageURL.add(cupDTO);
             }
             pageCupDTO = new PageImpl<>(cupDTOListWithImageURL, pageable, cupDTOListWithImageURL.size());
-            //pageCupDTO = pageCupEntity.map(element -> this.modelMapper.map(element, CupDTO.class));
-
-//            String imagePath = this.imageMinioUrl + cupDTO.getUser().getId() + "/" + cupDTO.getId() + "/";
-//            cupDTO.setImage(imagePath + cupDTO.getImage());
         }
         return pageCupDTO;
-    }
-
-    public CupDTO setImageUrl(CupDTO cupDTO) {
-        String imagePath = this.imageMinioUrl + cupDTO.getUser().getId() + "/" + cupDTO.getId() + "/";
-        cupDTO.setImage(imagePath + cupDTO.getImage());
-        return cupDTO;
     }
 }

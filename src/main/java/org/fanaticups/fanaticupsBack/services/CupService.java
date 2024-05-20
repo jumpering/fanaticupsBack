@@ -151,9 +151,8 @@ public class CupService {
     }
 
     public Page<CupDTO> findAllFromUserId(Long userId, Pageable pageable) {
-        //get user
         Optional<UserEntity> optionalUser = this.userRepository.findById(userId);
-        if(optionalUser.isPresent()){
+        if (optionalUser.isPresent()) {
             Page<CupEntity> pageCupEntity = this.cupRepository.findAllByUser(optionalUser.get(), pageable);
             Page<CupDTO> pageCupDTO = pageCupEntity.map(element -> this.modelMapper.map(element, CupDTO.class));
             pageCupDTO.forEach(this::setImageUrl);

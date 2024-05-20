@@ -37,7 +37,7 @@ public class WebSecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/api/cups/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/chat/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/users/**").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/users/**").permitAll()//TODO authenticated
+                                .requestMatchers(HttpMethod.POST, "/api/users/**").authenticated()
                                 .requestMatchers(HttpMethod.POST, "/api/chat/**").authenticated()
                                 .requestMatchers(HttpMethod.POST,"/api/cups/**").authenticated()
                                 .requestMatchers(HttpMethod.PUT,"/api/cups/**").authenticated()

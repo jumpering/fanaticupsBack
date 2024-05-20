@@ -1,6 +1,5 @@
 package org.fanaticups.fanaticupsBack.controllers;
 
-import org.fanaticups.fanaticupsBack.dao.entities.CupEntity;
 import org.fanaticups.fanaticupsBack.models.CupDTO;
 import org.fanaticups.fanaticupsBack.security.dao.UserEntity;
 
@@ -29,16 +28,19 @@ public class UserController {
     private CupService cupService;
 
     @CrossOrigin(origins = "http://localhost:4200")
-    @PostMapping(value = "/users/favorites")
-    public ResponseEntity<Void> updateFavoriteList(@RequestParam("userId") Long userId,
+    @PostMapping(value = "/users/favorites/{userId}")
+    public ResponseEntity<Boolean> setCupToFavorite(@PathVariable("userId") Long userId,
                                                    @RequestParam("cupId") Long cupId) {
         Optional<UserEntity> optionalUserEntity = this.userService.findUserById(userId);
         Optional<CupDTO> optionalCupEntity = this.cupService.findCupById(cupId);
         if (optionalCupEntity.isEmpty() || optionalUserEntity.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
-        this.userService.setCupToFavorites(optionalUserEntity.get(), optionalCupEntity.get());
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT); //204 response
+        boolean isFavorite = this.userService.setCupToFavorites(optionalUserEntity.get(), optionalCupEntity.get());
+        if (isFavorite) {
+            return ResponseEntity.ok(true);
+        }
+        return ResponseEntity.ok(false);
     }
 
     @CrossOrigin(origins = "http://localhost:4200")
@@ -48,9 +50,14 @@ public class UserController {
                                                                 direction = Sort.Direction.DESC,
                                                                 page = 0,
                                                                 size = 12) Pageable pageable) {
-//        List<CupDTO> cupDTOList = this.userService.getFavoriteCupList(userId);
         Page<CupDTO> pageCupDTO = this.userService.getFavoriteCupList(userId, pageable);
         return ResponseEntity.ok(pageCupDTO);
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
+    @PostMapping(value = "/users/isFavorite/{userId}")
+    public ResponseEntity<Boolean> isFavorite(@PathVariable("userId") Long userId,
+                                              @RequestParam("cupId") Long cupId) {
+        return ResponseEntity.ok(this.userService.isCupFavorite(userId, cupId));
+    }
 }

@@ -11,24 +11,14 @@ import org.springframework.data.jpa.repository.Query;
 
 
 public interface UserRepository extends JpaRepository<UserEntity, Long>{
-  
-//    public Optional<UserEntity> findById(Long id);
-//
-//    public Optional<UserEntity> findByName(String name);
 
     public Optional<UserEntity> findOneByEmail(String email);
 
     public boolean existsByEmail(String email);
 
-
-
-
     @Query("SELECT u.favoriteCupList FROM users u WHERE u.id = :userId")
-    Page<CupEntity> findFavoriteProductsByUserId(Long userId, Pageable pageable);
+    Page<CupEntity> findFavoriteCupsByUserId(Long userId, Pageable pageable);
 
 //    @Query("SELECT u.favoriteCupList FROM users u WHERE u.id = :userId")
-//    List<CupEntity> findFavoriteProductsByUserId(Long userId);
-
-
-
+//    List<CupEntity> findFavoriteCupListByUserId(Long userId);
 }
