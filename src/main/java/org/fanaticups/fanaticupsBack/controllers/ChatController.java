@@ -34,7 +34,7 @@ public class ChatController {
     @GetMapping(value = "/chat/{cupId}")
     public ResponseEntity<List<MessageEntity>> findAllMessagesByCupId(@PathVariable Long cupId) {
         List<MessageEntity> messageEntityList = this.chatService.findAllMessages(cupId);
-        return messageEntityList.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(messageEntityList);
+        return ResponseEntity.ok(messageEntityList);
     }
     @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping(value = "/chat")

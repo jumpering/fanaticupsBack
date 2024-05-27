@@ -101,8 +101,9 @@ public class CupService {
         return this.cupRepository.existsByUser_IdAndName(Long.valueOf(userId), name);
     }
 
-    public void delete(Long id) {
-        this.cupRepository.deleteById(id);
+    public void delete(Long cupId) {
+        this.userRepository.deleteCupFromFavorites(cupId);
+        this.cupRepository.deleteById(cupId);
     }
 
     public Optional<CupDTO> update(String cup, MultipartFile image) {
