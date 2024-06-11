@@ -36,6 +36,7 @@ public class ChatController {
         List<MessageEntity> messageEntityList = this.chatService.findAllMessages(cupId);
         return ResponseEntity.ok(messageEntityList);
     }
+
     @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping(value = "/chat")
     public ResponseEntity<MessageEntity> addMessage(@RequestParam("cupId") Long cupId,
