@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -23,4 +25,7 @@ public class CategoryEntity {
 
     @Column(name = "image")
     private String image;
+
+    @ManyToMany(mappedBy = "cupCategoriesList")
+    private List<CupEntity> cups;
 }

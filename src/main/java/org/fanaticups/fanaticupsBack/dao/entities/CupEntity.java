@@ -1,18 +1,15 @@
 package org.fanaticups.fanaticupsBack.dao.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import org.fanaticups.fanaticupsBack.security.dao.UserEntity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 import lombok.Data;
+
+import java.util.List;
 
 
 @Data
@@ -45,4 +42,12 @@ public class CupEntity {
     @ManyToOne
     @JsonBackReference //para que no haga recursión
     private UserEntity user;
+
+    @ManyToMany()
+    @JoinTable(
+            name = "cups_categories",
+            joinColumns = @JoinColumn(name = "cup_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private List<CategoryEntity> cupCategoriesList;
 }

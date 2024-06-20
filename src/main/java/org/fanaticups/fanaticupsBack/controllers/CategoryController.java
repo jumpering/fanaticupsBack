@@ -8,8 +8,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.fanaticups.fanaticupsBack.dao.entities.CategoryEntity;
 import org.fanaticups.fanaticupsBack.models.CategoryDTO;
+import org.fanaticups.fanaticupsBack.models.CupDTO;
 import org.fanaticups.fanaticupsBack.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,5 +49,12 @@ public class CategoryController {
     public ResponseEntity<CategoryDTO> create(@RequestBody @Valid CategoryDTO categoryDTO) {
         Optional<CategoryDTO> categoryDTOOptional = this.categoryService.save(categoryDTO);
         return categoryDTOOptional.isPresent() ? ResponseEntity.status(HttpStatus.CREATED).body(categoryDTO) : ResponseEntity.notFound().build();
+    }
+
+    @CrossOrigin(origins = "http://localhost:4200")
+    @GetMapping(value = "/categories/{id}/cups")
+    public ResponseEntity<Page<CupDTO>> findCupsByCategoryId(@PathVariable("id") Long id, @PageableDefault(sort = "id", direction = Sort.Direction.DESC, page = 0, size = 12) Pageable pageable) {
+        Page<CupDTO> cupPage = this.categoryService.findCupsByCategoryId(id, pageable);
+        return ResponseEntity.ok(cupPage);
     }
 }

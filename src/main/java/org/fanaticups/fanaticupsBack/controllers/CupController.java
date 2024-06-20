@@ -61,9 +61,9 @@ public class CupController {
             )})
     @CrossOrigin(origins = "http://localhost:4200")
     //@CrossOrigin
-    @GetMapping(value = "/cups/search/{searchCupName}")
-    public ResponseEntity<Page<CupDTO>> findAllWithSearchStringName(@PathVariable String searchCupName, @PageableDefault(sort = "id", direction = Sort.Direction.DESC, page = 0, size = 12) Pageable pageable) {
-        Page<CupDTO> cupsDTOList = this.cupService.findAllCupsWithSearchName(pageable, searchCupName);
+    @GetMapping(value = "/cups/name/{cupName}")
+    public ResponseEntity<Page<CupDTO>> findAllWithSearchStringName(@PathVariable String cupName, @PageableDefault(sort = "id", direction = Sort.Direction.DESC, page = 0, size = 12) Pageable pageable) {
+        Page<CupDTO> cupsDTOList = this.cupService.findAllCupsWithSearchName(pageable, cupName);
         return cupsDTOList.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(cupsDTOList);
     }
 
