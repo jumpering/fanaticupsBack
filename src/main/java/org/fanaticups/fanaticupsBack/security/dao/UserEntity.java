@@ -48,6 +48,7 @@ public class UserEntity implements UserDetails {
     private List<CupEntity> cups;
 
     @ManyToMany()
+    @JsonIgnore
     @JoinTable(
             name = "favorites",
             joinColumns = @JoinColumn(name = "user_id"),

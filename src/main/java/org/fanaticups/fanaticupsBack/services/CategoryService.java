@@ -1,7 +1,5 @@
 package org.fanaticups.fanaticupsBack.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.checkerframework.checker.units.qual.A;
 import org.fanaticups.fanaticupsBack.dao.entities.CategoryEntity;
 import org.fanaticups.fanaticupsBack.dao.entities.CupEntity;
 import org.fanaticups.fanaticupsBack.dao.repositories.CategoryRepository;
@@ -13,8 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,14 +50,23 @@ public class CategoryService {
 
     public Page<CupDTO> findCupsByCategoryId(Long id, Pageable pageable) {
         Page<CupEntity> pageCupEntity = this.categoryRepository.findCupsByCategoryId(id, pageable);
-        //List<CupDTO> cupDTOList = new ArrayList<>();
         Page<CupDTO> pageCupDTO = pageCupEntity.map(element -> this.modelMapper.map(element, CupDTO.class));
         pageCupDTO.forEach(this.cupService::setImageUrl);
-
-//        for (CupEntity cupEntity : cupEntityList) {
-//            CupDTO cupDTO = this.modelMapper.map(cupEntity, CupDTO.class);
-//            cupDTOList.add(cupDTO);
-//        }
         return pageCupDTO;
+    }
+
+    @Transactional
+    public void deleteCupFromCategory(Long id) {
+        Optional<CategoryEntity> categoryEntity = this.categoryRepository.findCategoryByCups_Id(id);
+        if (categoryEntity.isPresent()) {
+            CategoryEntity categoryEntitySaved = categoryEntity.get();
+            CupEntity cupEntity = categoryEntitySaved.getCups()
+                    .stream()
+                    .filter(cup -> cup.getId().equals(id))
+                    .findFirst()
+                    .orElse(null);
+            categoryEntitySaved.getCups().remove(cupEntity);
+            this.categoryRepository.save(categoryEntitySaved);
+        }
     }
 }

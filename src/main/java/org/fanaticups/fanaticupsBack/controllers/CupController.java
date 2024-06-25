@@ -3,6 +3,7 @@ package org.fanaticups.fanaticupsBack.controllers;
 import java.util.Optional;
 
 import org.fanaticups.fanaticupsBack.models.CupDTO;
+import org.fanaticups.fanaticupsBack.services.CategoryService;
 import org.fanaticups.fanaticupsBack.services.ChatService;
 import org.fanaticups.fanaticupsBack.services.CupService;
 import org.fanaticups.fanaticupsBack.services.MinioService;
@@ -34,6 +35,9 @@ public class CupController {
 
     @Autowired
     private ChatService chatService;
+
+    @Autowired
+    private CategoryService categoryService;
 
     @Operation(summary = "Get all cups pageable")
     @ApiResponses(value = {
@@ -118,6 +122,7 @@ public class CupController {
             String path = cupDTO.getUser().getId() + "/" + cupDTO.getId() + "/" + cupDTO.getImage();
             if (this.minioService.deletePathAndFile(path)) {
                 this.chatService.deleteCupChat(id);
+                this.categoryService.deleteCupFromCategory(id);
                 this.cupService.delete(id);
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT); //204 response
             }

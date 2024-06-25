@@ -9,11 +9,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
+import java.util.Optional;
 
 public interface CategoryRepository extends JpaRepository<CategoryEntity, Long> {
 
     @Query("SELECT c.cups FROM categories c WHERE c.id = :id")
     Page<CupEntity> findCupsByCategoryId(@Param("id") Long id, Pageable pageable);
 
+    Optional<CategoryEntity> findCategoryByCups_Id(Long cupId);
 }
