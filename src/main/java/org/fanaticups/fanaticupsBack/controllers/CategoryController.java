@@ -57,4 +57,14 @@ public class CategoryController {
         Page<CupDTO> cupPage = this.categoryService.findCupsByCategoryId(id, pageable);
         return ResponseEntity.ok(cupPage);
     }
+
+    @CrossOrigin(origins = "http://localhost:4200")
+    @PostMapping(value = "/categories/cup")
+    public ResponseEntity<Void> createForCup(@RequestBody String categoriesForCup) { //?boolean
+        boolean response = this.categoryService.createForCup(categoriesForCup);
+        if(response){
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
 }

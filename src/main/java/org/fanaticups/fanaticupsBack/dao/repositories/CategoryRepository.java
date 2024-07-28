@@ -3,6 +3,7 @@ package org.fanaticups.fanaticupsBack.dao.repositories;
 
 import org.fanaticups.fanaticupsBack.dao.entities.CategoryEntity;
 import org.fanaticups.fanaticupsBack.dao.entities.CupEntity;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,4 +18,7 @@ public interface CategoryRepository extends JpaRepository<CategoryEntity, Long> 
     Page<CupEntity> findCupsByCategoryId(@Param("id") Long id, Pageable pageable);
 
     Optional<CategoryEntity> findCategoryByCups_Id(Long cupId);
+
+    @NotNull
+    Optional<CategoryEntity> findById(@NotNull Long categoryId);
 }

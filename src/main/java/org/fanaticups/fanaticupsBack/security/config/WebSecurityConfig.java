@@ -43,7 +43,7 @@ public class WebSecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/api/users/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/users/**").authenticated()
                                 .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/categories/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/categories/**").authenticated()
                                 .anyRequest().authenticated()
 //                                .anyRequest().permitAll()
                                 //.requestMatchers("/authenticate/**").allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH").permiteAll()

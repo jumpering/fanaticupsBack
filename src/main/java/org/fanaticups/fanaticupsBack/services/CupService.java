@@ -3,6 +3,7 @@ package org.fanaticups.fanaticupsBack.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.fanaticups.fanaticupsBack.dao.entities.CategoryEntity;
 import org.fanaticups.fanaticupsBack.security.dao.UserEntity;
 import org.fanaticups.fanaticupsBack.security.dao.UserRepository;
 
@@ -19,7 +20,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import org.fanaticups.fanaticupsBack.dao.entities.CupEntity;
@@ -102,6 +105,7 @@ public class CupService {
     }
 
     public void delete(Long cupId) {
+        this.deleteCategoriesToCup(cupId);
         this.userRepository.deleteCupFromFavorites(cupId);
         this.cupRepository.deleteById(cupId);
     }
@@ -160,5 +164,22 @@ public class CupService {
             return pageCupDTO;
         }
         return new PageImpl<>(Collections.emptyList(), pageable, 0);
+    }
+
+    public void addCategoriesToCup(Long cupId, List<CategoryEntity> categoryEntityList) {
+        Optional<CupEntity> cupEntity = this.cupRepository.findById(cupId);
+        if (cupEntity.isPresent()) {
+            cupEntity.get().setCupCategoriesList(categoryEntityList);
+            this.cupRepository.save(cupEntity.get());
+        }
+    }
+
+    public void deleteCategoriesToCup(Long cupId) {
+        Optional<CupEntity> cupEntity = this.cupRepository.findById(cupId);
+        if (cupEntity.isPresent()) {
+            List<CategoryEntity> toEmpty = new ArrayList<>();
+            cupEntity.get().setCupCategoriesList(toEmpty);
+            this.cupRepository.save(cupEntity.get());
+        }
     }
 }

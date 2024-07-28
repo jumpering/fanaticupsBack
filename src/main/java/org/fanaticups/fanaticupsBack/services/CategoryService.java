@@ -1,10 +1,15 @@
 package org.fanaticups.fanaticupsBack.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.fanaticups.fanaticupsBack.dao.entities.CategoryEntity;
 import org.fanaticups.fanaticupsBack.dao.entities.CupEntity;
 import org.fanaticups.fanaticupsBack.dao.repositories.CategoryRepository;
+import org.fanaticups.fanaticupsBack.dao.repositories.CupRepository;
+import org.fanaticups.fanaticupsBack.models.CategoriesCupDTO;
 import org.fanaticups.fanaticupsBack.models.CategoryDTO;
 import org.fanaticups.fanaticupsBack.models.CupDTO;
+import org.fanaticups.fanaticupsBack.models.RequestBodyCreateCategoriesForCup;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,7 +31,7 @@ public class CategoryService {
     private CupService cupService;
 
     private final ModelMapper modelMapper = new ModelMapper();
-    //private final ObjectMapper objectMapper = new ObjectMapper(); //Jackson mapper
+    private final ObjectMapper objectMapper = new ObjectMapper(); //Jackson mapper
     @Value("${apiRootCategories}")
     private String imageMinioUrl;
 
@@ -68,5 +74,23 @@ public class CategoryService {
             categoryEntitySaved.getCups().remove(cupEntity);
             this.categoryRepository.save(categoryEntitySaved);
         }
+    }
+
+    public boolean createForCup(String categoriesForCup) {
+        RequestBodyCreateCategoriesForCup requestBodyCreateCategoriesForCup = new RequestBodyCreateCategoriesForCup();
+        List<CategoryEntity> categoryEntityList = new ArrayList<>();
+        try {
+            requestBodyCreateCategoriesForCup = this.objectMapper.readValue(categoriesForCup, RequestBodyCreateCategoriesForCup.class);
+        } catch (JsonProcessingException e) {
+            return false;
+        }
+        Long[] listOfCategories = requestBodyCreateCategoriesForCup.getCategories();
+        for (Long listOfCategory : listOfCategories) {
+            Optional<CategoryEntity> categoryEntityOptional = this.categoryRepository.findById(listOfCategory);
+            categoryEntityList.add(categoryEntityOptional.orElse(null));
+        }
+        categoryEntityList.forEach(element -> System.out.println("category: " + element.getName()));
+        this.cupService.addCategoriesToCup(requestBodyCreateCategoriesForCup.getCupId(), categoryEntityList);
+        return true;
     }
 }
