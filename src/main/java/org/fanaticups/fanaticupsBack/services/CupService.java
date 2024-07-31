@@ -105,7 +105,7 @@ public class CupService {
     }
 
     public void delete(Long cupId) {
-        this.deleteCategoriesToCup(cupId);
+        this.deleteCupCategories(cupId);
         this.userRepository.deleteCupFromFavorites(cupId);
         this.cupRepository.deleteById(cupId);
     }
@@ -174,11 +174,14 @@ public class CupService {
         }
     }
 
-    public void deleteCategoriesToCup(Long cupId) {
+    public void deleteCupCategories(Long cupId) {
         Optional<CupEntity> cupEntity = this.cupRepository.findById(cupId);
         if (cupEntity.isPresent()) {
-            List<CategoryEntity> toEmpty = new ArrayList<>();
-            cupEntity.get().setCupCategoriesList(toEmpty);
+//            List<CategoryEntity> toEmpty = new ArrayList<>();
+//            cupEntity.get().setCupCategoriesList(toEmpty);
+            List<CategoryEntity> currentCategoryList = cupEntity.get().getCupCategoriesList();
+            currentCategoryList.clear();
+            cupEntity.get().setCupCategoriesList(currentCategoryList);
             this.cupRepository.save(cupEntity.get());
         }
     }

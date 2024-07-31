@@ -122,7 +122,7 @@ public class CupController {
             String path = cupDTO.getUser().getId() + "/" + cupDTO.getId() + "/" + cupDTO.getImage();
             if (this.minioService.deletePathAndFile(path)) {
                 this.chatService.deleteCupChat(id);
-                this.categoryService.deleteCupFromCategory(id);
+                this.categoryService.deleteCupFromCategories(id);
                 this.cupService.delete(id);
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT); //204 response
             }

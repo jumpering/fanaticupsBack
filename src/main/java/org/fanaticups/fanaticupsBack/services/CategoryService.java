@@ -62,17 +62,12 @@ public class CategoryService {
     }
 
     @Transactional
-    public void deleteCupFromCategory(Long id) {
-        Optional<CategoryEntity> categoryEntity = this.categoryRepository.findCategoryByCups_Id(id);
-        if (categoryEntity.isPresent()) {
-            CategoryEntity categoryEntitySaved = categoryEntity.get();
-            CupEntity cupEntity = categoryEntitySaved.getCups()
-                    .stream()
-                    .filter(cup -> cup.getId().equals(id))
-                    .findFirst()
-                    .orElse(null);
-            categoryEntitySaved.getCups().remove(cupEntity);
-            this.categoryRepository.save(categoryEntitySaved);
+    public void deleteCupFromCategories(Long id) { //TODO claro, la cup está en más de una categoria!!!!!!
+        List<CategoryEntity> allCategories = this.categoryRepository.findAll();
+        for (int i = 0; i < allCategories.size(); i++) {
+            CategoryEntity category = allCategories.get(i);
+            category.getCups().removeIf(element -> element.getId().equals(id));
+            this.categoryRepository.save(category);
         }
     }
 
