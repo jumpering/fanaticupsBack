@@ -1,5 +1,6 @@
 package org.fanaticups.fanaticupsBack.services;
 
+import jakarta.transaction.Transactional;
 import org.fanaticups.fanaticupsBack.dao.entities.CupEntity;
 import org.fanaticups.fanaticupsBack.models.CupDTO;
 import org.fanaticups.fanaticupsBack.security.dao.UserEntity;
@@ -30,17 +31,19 @@ public class UserService {
     @Value("${apiRootImagesMinio}")
     private String imageMinioUrl;
 
+    @Transactional
     public boolean setCupToFavorites(UserEntity userEntity, CupDTO cupDTO) {
         List<CupEntity> listOfCupEntityFavorites = userEntity.getFavoriteCupList();
         CupEntity cupEntity = this.modelMapper.map(cupDTO, CupEntity.class);
-        boolean isFavorite = listOfCupEntityFavorites.contains(cupEntity);
+        boolean isFavorite = listOfCupEntityFavorites.stream()
+                .anyMatch(c -> c.getId().equals(cupEntity.getId()));
         if(!isFavorite){
             listOfCupEntityFavorites.add(cupEntity);
             userEntity.setFavoriteCupList(listOfCupEntityFavorites);
             this.userRepository.save(userEntity);
             return true; //cup added to favorite list
         } else {
-            listOfCupEntityFavorites.remove(cupEntity);
+            listOfCupEntityFavorites.removeIf(c -> c.getId().equals(cupEntity.getId()));
             userEntity.setFavoriteCupList(listOfCupEntityFavorites);
             this.userRepository.save(userEntity);
             return false; //cup removed to favorite list
