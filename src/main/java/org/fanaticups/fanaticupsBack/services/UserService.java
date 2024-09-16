@@ -3,6 +3,7 @@ package org.fanaticups.fanaticupsBack.services;
 import jakarta.transaction.Transactional;
 import org.fanaticups.fanaticupsBack.dao.entities.CupEntity;
 import org.fanaticups.fanaticupsBack.models.CupDTO;
+import org.fanaticups.fanaticupsBack.models.UserDTO;
 import org.fanaticups.fanaticupsBack.security.dao.UserEntity;
 import org.fanaticups.fanaticupsBack.security.dao.UserRepository;
 import org.modelmapper.ModelMapper;

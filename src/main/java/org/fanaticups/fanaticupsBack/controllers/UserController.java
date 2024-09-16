@@ -1,6 +1,7 @@
 package org.fanaticups.fanaticupsBack.controllers;
 
 import org.fanaticups.fanaticupsBack.models.CupDTO;
+import org.fanaticups.fanaticupsBack.models.UserDTO;
 import org.fanaticups.fanaticupsBack.security.dao.UserEntity;
 
 import org.fanaticups.fanaticupsBack.services.CupService;
@@ -59,5 +60,12 @@ public class UserController {
     public ResponseEntity<Boolean> isFavorite(@PathVariable("userId") Long userId,
                                               @RequestParam("cupId") Long cupId) {
         return ResponseEntity.ok(this.userService.isCupFavorite(userId, cupId));
+    }
+
+    @CrossOrigin(origins = "http://localhost:4200")
+    @GetMapping(value = "/users/{userId}")
+    public ResponseEntity<UserEntity> getUser(@PathVariable("userId") Long userId) {
+        Optional<UserEntity> optionalUserEntity = this.userService.findUserById(userId);
+        return optionalUserEntity.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.badRequest().build());
     }
 }
