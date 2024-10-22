@@ -68,4 +68,11 @@ public class UserController {
         Optional<UserEntity> optionalUserEntity = this.userService.findUserById(userId);
         return optionalUserEntity.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.badRequest().build());
     }
+
+    @CrossOrigin(origins = "http://localhost:4200")
+    @GetMapping(value = "/users/name/{userName}")
+    public ResponseEntity<List<UserEntity>> getUsersByNameContainPartialName(@PathVariable("userName") String userName) {
+        List<UserEntity> getUserByNameList = this.userService.findUserByName(userName);
+        return ResponseEntity.ok(getUserByNameList);
+    }
 }

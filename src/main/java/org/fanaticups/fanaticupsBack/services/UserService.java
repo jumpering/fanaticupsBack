@@ -84,4 +84,9 @@ public class UserService {
         }
         return pageCupDTO;
     }
+
+    public List<UserEntity> findUserByName(String userName) {
+        List<UserEntity> userEntityList = userRepository.findByNameContains(userName);
+        return userEntityList;
+    }
 }

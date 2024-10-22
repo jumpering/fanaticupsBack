@@ -28,4 +28,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>{
     @Transactional
     @Query(value = "DELETE FROM fanaticups.favorites WHERE cup_id = ?1", nativeQuery = true)
     void deleteCupFromFavorites(Long cupId);
+
+    List<UserEntity> findByNameContains(String name);
 }
